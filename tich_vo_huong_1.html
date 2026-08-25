@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tích vô hướng của hai vectơ — Mô hình tương tác</title>
+<style>
+  :root{
+    --paper:#fbfaf5;
+    --grid:#dce6ef;
+    --grid-strong:#c3d4e2;
+    --ink:#2b2b33;
+    --ink-soft:#5c5c68;
+    --force:#d64545;      /* phấn đỏ: lực F */
+    --disp:#2f6fb0;       /* phấn xanh: quãng đường MN */
+    --proj:#e08a1e;       /* phấn cam: hình chiếu dương */
+    --proj-neg:#b23b6f;   /* phấn hồng: hình chiếu âm */
+    --zero:#7a8a99;
+    --box:#c99a5b;
+    --box-dark:#9c7038;
+    --panel:#ffffff;
+    --line:#e4e0d4;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.5;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:20px 20px 48px;}
+  header.masthead{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:8px;
+  }
+  header.masthead .eyebrow{
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:600;
+  }
+  header.masthead h1{
+    font-size:23px;margin:0;font-weight:700;letter-spacing:-.01em;
+  }
+  header.masthead .ref{
+    margin-left:auto;font-size:12px;color:var(--ink-soft);
+    border:1px solid var(--line);border-radius:999px;padding:3px 11px;white-space:nowrap;
+  }
+  .layout{display:grid;grid-template-columns:1fr 320px;gap:20px;margin-top:18px;}
+  @media(max-width:860px){.layout{grid-template-columns:1fr;}}
+
+  .stage-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;box-shadow:0 1px 0 rgba(0,0,0,.02);
+  }
+  svg#stage{display:block;width:100%;height:auto;background:
+    linear-gradient(var(--grid) 1px,transparent 1px) 0 0/28px 28px,
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/28px 28px,
+    var(--paper);
+  }
+
+  .readout{
+    display:flex;align-items:stretch;gap:0;border-top:1px solid var(--line);
+    background:var(--panel);
+  }
+  .readout .cell{flex:1;padding:12px 16px;border-right:1px solid var(--line);}
+  .readout .cell:last-child{border-right:none;}
+  .readout .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  .readout .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px;}
+  .v.pos{color:var(--proj);}.v.neg{color:var(--proj-neg);}.v.zero{color:var(--zero);}
+
+  aside.panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:18px;height:fit-content;position:sticky;top:16px;
+  }
+  aside h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px;}
+  .formula{
+    background:var(--paper);border:1px dashed var(--grid-strong);border-radius:10px;
+    padding:12px 14px;text-align:center;font-size:17px;margin-bottom:18px;color:var(--ink);
+  }
+  .formula .live{font-weight:700;}
+  .slider-row label{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-soft);margin-bottom:6px;}
+  .slider-row .theta-val{font-weight:700;color:var(--ink);font-size:15px;}
+  input[type=range]{width:100%;accent-color:var(--force);height:26px;cursor:pointer;}
+  .ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-soft);margin-top:-2px;}
+  .fixed-note{font-size:12px;color:var(--ink-soft);margin:14px 0 18px;padding-top:12px;border-top:1px solid var(--line);}
+  .fixed-note b{color:var(--ink);}
+  .fixed-note .chip{display:inline-block;border-radius:4px;padding:1px 6px;font-weight:700;color:#fff;}
+  .chip.f{background:var(--force);}.chip.mn{background:var(--disp);}
+
+  .btn-row{display:flex;gap:10px;}
+  button{
+    flex:1;font-family:inherit;font-size:14px;font-weight:600;
+    border:none;border-radius:9px;padding:11px 12px;cursor:pointer;transition:.15s;
+  }
+  button.primary{background:var(--ink);color:#fff;}
+  button.primary:hover{background:#000;}
+  button.ghost{background:var(--paper);color:var(--ink);border:1px solid var(--line);}
+  button.ghost:hover{border-color:var(--ink-soft);}
+  button:focus-visible{outline:3px solid var(--disp);outline-offset:2px;}
+
+  /* Bảng kết luận hiện dần sau khi tính */
+  .conclusion{
+    margin-top:20px;border:1px solid var(--line);border-radius:14px;background:var(--panel);
+    overflow:hidden;
+  }
+  .conclusion .head{
+    background:var(--ink);color:#fff;padding:10px 18px;font-size:14px;font-weight:600;
+    letter-spacing:.02em;display:flex;align-items:center;gap:8px;
+  }
+  .conclusion .body{padding:6px 18px 18px;}
+  .crow{
+    display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;
+    padding:13px 0;border-bottom:1px dashed var(--line);
+    opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s;
+  }
+  .crow:last-child{border-bottom:none;}
+  .crow.show{opacity:1;transform:none;}
+  .crow .tag{font-weight:700;font-size:14px;text-align:center;border-radius:8px;padding:8px 6px;color:#fff;}
+  .tag.pos{background:var(--proj);}.tag.zero{background:var(--zero);}.tag.neg{background:var(--proj-neg);}
+  .crow .txt{font-size:14px;color:var(--ink);}
+  .crow .txt b{font-weight:700;}
+  .takeaway{
+    margin-top:14px;padding:14px 16px;border-radius:10px;
+    background:linear-gradient(180deg,#fff8ec,#fdf1dc);border:1px solid #f0dcb4;
+    font-size:14.5px;opacity:0;transform:translateY(6px);transition:opacity .5s .2s,transform .5s .2s;
+  }
+  .takeaway.show{opacity:1;transform:none;}
+  .takeaway b{color:var(--box-dark);}
+  .hint{font-size:12px;color:var(--ink-soft);margin-top:10px;font-style:italic;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Toán 12 · Kết nối tri thức</div>
+      <h1>Tích vô hướng của hai vectơ</h1>
+    </div>
+    <div class="ref">Bám theo Hình 4.42 — SGK trang 66</div>
+  </header>
+
+  <div class="layout">
+    <!-- SÂN KHẤU MÔ PHỎNG -->
+    <div>
+      <div class="stage-card">
+        <svg id="stage" viewBox="0 0 720 420" role="img"
+             aria-label="Mô phỏng người kéo thùng: lực F và quãng đường MN">
+          <!-- mặt sàn -->
+          <rect x="0" y="322" width="720" height="98" fill="#eef4f8"/>
+          <line x1="0" y1="322" x2="720" y2="322" stroke="#cfe0ec" stroke-width="2"/>
+
+          <!-- Đường thẳng MN (quỹ đạo) -->
+          <line id="mnLine" x1="150" y1="300" x2="560" y2="300"
+                stroke="var(--disp)" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round"/>
+          <!-- mũi tên MN -->
+          <g id="mnArrow"></g>
+
+          <!-- Hộp đích mờ ở N -->
+          <g id="boxN" opacity="0.45"></g>
+          <!-- Hộp gỗ ở M -->
+          <g id="boxM"></g>
+
+          <!-- Nhóm hình chiếu (ẩn ban đầu) -->
+          <g id="projGroup" opacity="0"></g>
+
+          <!-- Vectơ lực F (xoay theo theta) -->
+          <g id="forceGroup"></g>
+
+          <!-- Cung góc theta -->
+          <path id="arc" fill="none" stroke="var(--ink-soft)" stroke-width="1.5"/>
+          <text id="arcLabel" font-size="15" fill="var(--ink)" font-style="italic"></text>
+
+          <!-- nhãn điểm -->
+          <text id="labM" font-size="15" font-weight="700" fill="var(--ink)">M</text>
+          <text id="labN" font-size="15" font-weight="700" fill="var(--ink)">N</text>
+
+          <!-- người kéo (đơn giản hoá, gợi Hình 4.42) -->
+          <g id="person"></g>
+        </svg>
+
+        <!-- Bảng số đọc nhanh -->
+        <div class="readout">
+          <div class="cell">
+            <div class="k">Góc (F, MN)</div>
+            <div class="v" id="roTheta">60°</div>
+          </div>
+          <div class="cell">
+            <div class="k">cos(F, MN)</div>
+            <div class="v" id="roCos">0,50</div>
+          </div>
+          <div class="cell">
+            <div class="k">Tích vô hướng F · MN</div>
+            <div class="v pos" id="roDot">10,0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BẢNG KẾT LUẬN -->
+      <div class="conclusion">
+        <div class="head">Rút ra điều gì?</div>
+        <div class="body">
+          <div class="crow" id="cPos">
+            <div class="tag pos">Góc nhọn<br>0°–90°</div>
+            <div class="txt">cos &gt; 0 nên <b>F · MN &gt; 0</b>. Hai vectơ càng <b>cùng hướng</b>, hình chiếu càng dài, giá trị càng lớn.</div>
+          </div>
+          <div class="crow" id="cZero">
+            <div class="tag zero">Vuông góc<br>90°</div>
+            <div class="txt">cos = 0 nên <b>F · MN = 0</b>. Lực vuông góc với hướng đi thì <b>không sinh công</b> — đây chính là dấu hiệu <b>F ⊥ MN</b>.</div>
+          </div>
+          <div class="crow" id="cNeg">
+            <div class="tag neg">Góc tù<br>90°–180°</div>
+            <div class="txt">cos &lt; 0 nên <b>F · MN &lt; 0</b>. Hình chiếu đổ về phía <b>ngược</b> hướng MN, giá trị mang dấu âm.</div>
+          </div>
+          <div class="takeaway" id="cTake">
+            <b>Bản chất:</b> Tích vô hướng lấy độ dài của vectơ này nhân với độ dài phần bóng mà vectơ còn lại chiếu lên nó — nên dấu và độ lớn đều do góc giữa chúng quyết định.
+          </div>
+          <div class="hint">Kéo thanh trượt để đổi góc, rồi bấm “Tính toán” để xem hình chiếu được dựng ra sao.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BẢNG ĐIỀU KHIỂN -->
+    <aside class="panel">
+      <h2>Điều khiển</h2>
+      <div class="formula">
+        F · MN = |F| · |MN| · cos(F, MN)<br>
+        <span class="live">= 4 · 5 · <span id="fCos">0,50</span> = <span id="fDot">10,0</span></span>
+      </div>
+
+      <div class="slider-row">
+        <label>Góc giữa F và MN <span class="theta-val"><span id="thVal">60</span>°</span></label>
+        <input type="range" id="theta" min="0" max="180" step="1" value="60"
+               aria-label="Góc giữa lực F và quãng đường MN, từ 0 đến 180 độ">
+        <div class="ticks"><span>0°</span><span>90°</span><span>180°</span></div>
+      </div>
+
+      <div class="fixed-note">
+        Cố định: <span class="chip f">|F| = 4</span> &nbsp; <span class="chip mn">|MN| = 5</span><br>
+        Bài này chỉ đổi <b>góc</b> để thấy rõ góc quyết định dấu và độ lớn.
+      </div>
+
+      <div class="btn-row">
+        <button class="primary" id="calc">Tính toán</button>
+        <button class="ghost" id="reset">Đặt lại</button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  // ---- Hằng số hình học (fix cứng) ----
+  const FMAG = 4, MNMAG = 5;          // độ lớn cố định
+  const M = {x:230, y:300};           // điểm M (gốc kéo) — dịch phải để F quét đủ 180°
+  const N = {x:590, y:300};           // điểm N (đích)
+  const PXPERUNIT = 38;               // tỉ lệ vẽ vectơ F (px trên 1 đơn vị độ dài)
+  const FLEN = FMAG * PXPERUNIT;      // chiều dài mũi tên F trên màn hình
+
+  const $ = id => document.getElementById(id);
+  const stage = $('stage');
+  const NS = "http://www.w3.org/2000/svg";
+
+  // định dạng số kiểu VN (dấu phẩy thập phân)
+  const vn = (x, d=1) => x.toFixed(d).replace('.', ',');
+
+  // ---- Vẽ tĩnh: hộp, người, mũi tên MN ----
+  function boxPath(cx, baseY, w, h){
+    // hộp gỗ có nắp phối cảnh nhẹ
+    const x = cx - w/2, y = baseY - h;
+    return `M${x},${y} h${w} v${h} h${-w} Z`;
+  }
+  function drawBoxM(){
+    const g = $('boxM'); g.innerHTML='';
+    const w=64,h=52, x=M.x-w/2, y=M.y-h;
+    const r=(a,b,ww,hh,fill,st)=>{const e=document.createElementNS(NS,'rect');
+      e.setAttribute('x',a);e.setAttribute('y',b);e.setAttribute('width',ww);e.setAttribute('height',hh);
+      e.setAttribute('fill',fill);if(st){e.setAttribute('stroke',st);e.setAttribute('stroke-width',1.5);}g.appendChild(e);};
+    r(x,y,w,h,'var(--box)','var(--box-dark)');
+    // vân gỗ
+    for(let i=1;i<3;i++){const l=document.createElementNS(NS,'line');
+      l.setAttribute('x1',x);l.setAttribute('y1',y+i*h/3);l.setAttribute('x2',x+w);l.setAttribute('y2',y+i*h/3);
+      l.setAttribute('stroke','var(--box-dark)');l.setAttribute('stroke-width',1);l.setAttribute('opacity',.5);g.appendChild(l);}
+    const d=document.createElementNS(NS,'line');
+    d.setAttribute('x1',x+w/2);d.setAttribute('y1',y);d.setAttribute('x2',x+w/2);d.setAttribute('y2',y+h);
+    d.setAttribute('stroke','var(--box-dark)');d.setAttribute('stroke-width',1);d.setAttribute('opacity',.5);g.appendChild(d);
+  }
+  function drawBoxN(){
+    const g=$('boxN'); g.innerHTML='';
+    const w=64,h=52, x=N.x-w/2, y=N.y-h;
+    const p=document.createElementNS(NS,'rect');
+    p.setAttribute('x',x);p.setAttribute('y',y);p.setAttribute('width',w);p.setAttribute('height',h);
+    p.setAttribute('fill','none');p.setAttribute('stroke','var(--box-dark)');
+    p.setAttribute('stroke-width',1.5);p.setAttribute('stroke-dasharray','5 4');g.appendChild(p);
+  }
+  function drawMNArrow(){
+    const g=$('mnArrow'); g.innerHTML='';
+    // mũi tên tại N
+    const a=document.createElementNS(NS,'path');
+    a.setAttribute('d',`M${N.x-13},${N.y-7} L${N.x+2},${N.y} L${N.x-13},${N.y+7} Z`);
+    a.setAttribute('fill','var(--disp)');g.appendChild(a);
+    // nhãn MN
+    const t=document.createElementNS(NS,'text');
+    t.setAttribute('x',(M.x+N.x)/2);t.setAttribute('y',N.y+24);
+    t.setAttribute('font-size',15);t.setAttribute('fill','var(--disp)');
+    t.setAttribute('font-weight',700);t.setAttribute('text-anchor','middle');
+    t.textContent='MN';g.appendChild(t);
+  }
+  // Người kéo — tư thế đổi theo theta.
+  // Chân giữ cố định (trụ vững), thân+đầu nghiêng, tay vươn theo hướng lực.
+  // theta<=90: nghiêng người về phía N (kéo hiệu quả, giống Hình 4.42).
+  // theta>90 : KHÔNG còn là "kéo vật về N" đúng nghĩa vật lý nữa (lực chĩa ngược N).
+  //            Ta cách điệu: người nghiêng ngược, tay vươn ra sau — hình ảnh
+  //            "gồng người cản lực", không phải tư thế kéo thật. Xem ghi chú PRD mục 4.2.
+  const PERSON_X = 470, PERSON_Y = 300;
+  function drawPerson(deg){
+    const g=$('person'); g.innerHTML='';
+    const rad = deg*Math.PI/180;
+    const px=PERSON_X, py=PERSON_Y;
+
+    // độ nghiêng thân: +lean = nghiêng về phía N (phải), -lean = nghiêng về phía M (trái)
+    const leanMaxDeg = 24;
+    const leanDeg = leanMaxDeg*Math.cos(rad);          // 0°→+24, 90°→0, 180°→-24
+    const leanRad = leanDeg*Math.PI/180;
+
+    const hipX=px, hipY=py-38, torsoLen=44;
+    const shX = hipX + torsoLen*Math.sin(leanRad);
+    const shY = hipY - torsoLen*Math.cos(leanRad);
+    const headR=11;
+    const headX = shX + (headR+2)*Math.sin(leanRad);
+    const headY = shY - (headR+2)*Math.cos(leanRad);
+
+    // tay: vươn theo đúng hướng theta (đồng bộ trực quan với vectơ F)
+    const armLen=42;
+    const handX = shX + armLen*Math.cos(rad);
+    const handY = shY - armLen*Math.sin(rad);
+
+    const bodyColor = deg>90 ? '#8a5a68' : '#2e8b8b';   // đổi tông màu nhẹ khi ở chế độ "cản lực"
+
+    // chân (cố định, trụ)
+    const legs=document.createElementNS(NS,'path');
+    legs.setAttribute('d',`M${hipX},${hipY} L${hipX-16},${py} M${hipX},${hipY} L${hipX+13},${py}`);
+    legs.setAttribute('stroke','#3a4a63');legs.setAttribute('stroke-width',11);
+    legs.setAttribute('stroke-linecap','round');legs.setAttribute('fill','none');g.appendChild(legs);
+
+    // dây kéo (giản lược, nối tay tới hộp M)
+    const rope=document.createElementNS(NS,'line');
+    rope.setAttribute('x1',handX);rope.setAttribute('y1',handY);
+    rope.setAttribute('x2',M.x);rope.setAttribute('y2',M.y);
+    rope.setAttribute('stroke','#8a7458');rope.setAttribute('stroke-width',2);
+    rope.setAttribute('stroke-dasharray','1 3');rope.setAttribute('stroke-linecap','round');
+    g.appendChild(rope);
+
+    // thân
+    const torso=document.createElementNS(NS,'line');
+    torso.setAttribute('x1',hipX);torso.setAttribute('y1',hipY);
+    torso.setAttribute('x2',shX);torso.setAttribute('y2',shY);
+    torso.setAttribute('stroke',bodyColor);torso.setAttribute('stroke-width',16);
+    torso.setAttribute('stroke-linecap','round');g.appendChild(torso);
+
+    // tay
+    const arm=document.createElementNS(NS,'line');
+    arm.setAttribute('x1',shX);arm.setAttribute('y1',shY);
+    arm.setAttribute('x2',handX);arm.setAttribute('y2',handY);
+    arm.setAttribute('stroke',bodyColor);arm.setAttribute('stroke-width',7);
+    arm.setAttribute('stroke-linecap','round');g.appendChild(arm);
+
+    // đầu
+    const head=document.createElementNS(NS,'circle');
+    head.setAttribute('cx',headX);head.setAttribute('cy',headY);head.setAttribute('r',headR);
+    head.setAttribute('fill','#3a3f4a');g.appendChild(head);
+
+    // nhãn nhỏ khi ở chế độ cản lực (>90°) để giáo viên biết đây là hình ước lệ
+    if(deg>92){
+      const note=document.createElementNS(NS,'text');
+      note.setAttribute('x',px);note.setAttribute('y',py+38);
+      note.setAttribute('font-size',10.5);note.setAttribute('fill','#8a5a68');
+      note.setAttribute('text-anchor','middle');note.setAttribute('font-style','italic');
+      note.textContent='(hình ảnh ước lệ: gồng cản lực ngược)';
+      g.appendChild(note);
+    }
+  }
+
+
+  // ---- Cập nhật theo theta ----
+  function update(deg, {animate=false}={}){
+    const rad = deg*Math.PI/180;
+    // Vectơ F xuất phát từ M, tạo với MN (chiều dương Ox) góc theta, hướng lên trên
+    const fx = M.x + FLEN*Math.cos(rad);
+    const fy = M.y - FLEN*Math.sin(rad);
+
+    drawPerson(deg);   // tư thế người cập nhật theo góc
+
+    // --- vẽ vectơ F ---
+    const fg=$('forceGroup'); fg.innerHTML='';
+    const shaft=document.createElementNS(NS,'line');
+    shaft.setAttribute('x1',M.x);shaft.setAttribute('y1',M.y);
+    shaft.setAttribute('x2',fx);shaft.setAttribute('y2',fy);
+    shaft.setAttribute('stroke','var(--force)');shaft.setAttribute('stroke-width',4);
+    shaft.setAttribute('stroke-linecap','round');fg.appendChild(shaft);
+    // đầu mũi tên
+    const ah=8, ang=Math.atan2(fy-M.y,fx-M.x);
+    const head=document.createElementNS(NS,'path');
+    head.setAttribute('d',
+      `M${fx},${fy} L${fx-16*Math.cos(ang-0.4)},${fy-16*Math.sin(ang-0.4)} `+
+      `L${fx-16*Math.cos(ang+0.4)},${fy-16*Math.sin(ang+0.4)} Z`);
+    head.setAttribute('fill','var(--force)');fg.appendChild(head);
+    // nhãn F
+    const ft=document.createElementNS(NS,'text');
+    ft.setAttribute('x',fx+ (Math.cos(rad)>=0?8:-18));ft.setAttribute('y',fy-8);
+    ft.setAttribute('font-size',17);ft.setAttribute('fill','var(--force)');
+    ft.setAttribute('font-weight',700);ft.setAttribute('font-style','italic');
+    ft.textContent='F';fg.appendChild(ft);
+
+    // --- cung góc ---
+    const R=44;
+    const large=0, sweep=1;
+    const ex=M.x+R, ey=M.y;                 // điểm trên trục MN
+    const sx=M.x+R*Math.cos(rad), sy=M.y-R*Math.sin(rad);
+    $('arc').setAttribute('d',`M${ex},${ey} A${R},${R} 0 ${large} ${sweep} ${sx},${sy}`);
+    const al=$('arcLabel');
+    al.setAttribute('x',M.x+ (R+10)*Math.cos(rad/2));
+    al.setAttribute('y',M.y-(R+10)*Math.sin(rad/2)+5);
+    al.textContent='θ';
+
+    // --- nhãn điểm ---
+    $('labM').setAttribute('x',M.x-6);$('labM').setAttribute('y',M.y+22);
+    $('labN').setAttribute('x',N.x+10);$('labN').setAttribute('y',N.y-6);
+
+    // --- số liệu ---
+    const cos=Math.cos(rad);
+    const dot=FMAG*MNMAG*cos;
+    $('thVal').textContent=deg;
+    $('roTheta').textContent=deg+'°';
+    $('roCos').textContent=vn(cos,2);
+    $('fCos').textContent=vn(cos,2);
+    const dotStr=vn(dot,1), dotEl=$('roDot');
+    dotEl.textContent=dotStr; $('fDot').textContent=dotStr;
+    dotEl.className='v '+(dot>0.05?'pos':dot<-0.05?'neg':'zero');
+
+    // --- hình chiếu (chỉ vẽ lại vị trí; hiện/ẩn do nút Tính toán) ---
+    drawProjection(fx,fy,cos,animate);
+  }
+
+  // Hình chiếu vuông góc của ngọn F xuống đường thẳng MN
+  function drawProjection(fx,fy,cos,animate){
+    const g=$('projGroup'); g.innerHTML='';
+    const footX=fx, footY=M.y;              // chân đường vuông góc trên MN
+    const positive = cos>=0;
+    const col = Math.abs(cos)<0.02 ? 'var(--zero)' : (positive?'var(--proj)':'var(--proj-neg)');
+
+    // đường gióng vuông góc (nét đứt) từ ngọn F xuống MN
+    const drop=document.createElementNS(NS,'line');
+    drop.setAttribute('x1',fx);drop.setAttribute('y1',fy);
+    drop.setAttribute('x2',footX);drop.setAttribute('y2',footY);
+    drop.setAttribute('stroke',col);drop.setAttribute('stroke-width',2);
+    drop.setAttribute('stroke-dasharray','5 4');drop.setAttribute('opacity',.8);g.appendChild(drop);
+
+    // ký hiệu góc vuông tại chân
+    if(Math.abs(footX-M.x)>6){
+      const sgn = footX>M.x?1:-1;
+      const sq=document.createElementNS(NS,'path');
+      sq.setAttribute('d',`M${footX-8*sgn},${footY} v-8 h${8*sgn}`);
+      sq.setAttribute('fill','none');sq.setAttribute('stroke',col);sq.setAttribute('stroke-width',1.3);
+      g.appendChild(sq);
+    }
+
+    // đoạn hình chiếu trên MN (đậm màu) — chính là "cái bóng"
+    const proj=document.createElementNS(NS,'line');
+    proj.setAttribute('x1',M.x);proj.setAttribute('y1',footY);
+    proj.setAttribute('x2',footX);proj.setAttribute('y2',footY);
+    proj.setAttribute('stroke',col);proj.setAttribute('stroke-width',7);
+    proj.setAttribute('stroke-linecap','round');g.appendChild(proj);
+
+    // nhãn dấu
+    const lbl=document.createElementNS(NS,'text');
+    lbl.setAttribute('x',(M.x+footX)/2);lbl.setAttribute('y',footY+ (positive?42:42));
+    lbl.setAttribute('font-size',12);lbl.setAttribute('fill',col);
+    lbl.setAttribute('text-anchor','middle');lbl.setAttribute('font-weight',600);
+    lbl.textContent = Math.abs(cos)<0.02 ? 'bóng = 0' : (positive?'bóng cùng hướng → dương':'bóng ngược hướng → âm');
+    g.appendChild(lbl);
+
+    if(animate){
+      const len=Math.hypot(fx-footX,fy-footY);
+      drop.style.strokeDasharray=len; drop.style.strokeDashoffset=len;
+      drop.animate([{strokeDashoffset:len},{strokeDashoffset:0}],{duration:500,fill:'forwards'});
+      proj.animate([{opacity:0},{opacity:1}],{duration:400,delay:450,fill:'forwards'});
+      lbl.animate([{opacity:0},{opacity:1}],{duration:300,delay:800,fill:'forwards'});
+    }
+  }
+
+  // ---- Kết luận: chỉ hiện đúng bucket theo góc hiện tại ----
+  function bucketOf(deg){
+    if(deg<90) return 'cPos';
+    if(deg>90) return 'cNeg';
+    return 'cZero';
+  }
+  function hideConclusion(){
+    ['cPos','cZero','cNeg','cTake'].forEach(id=>$(id).classList.remove('show'));
+  }
+  function revealConclusion(deg){
+    hideConclusion();
+    const id = bucketOf(deg);
+    setTimeout(()=>$(id).classList.add('show'), 300);
+    setTimeout(()=>$('cTake').classList.add('show'), 300+450);
+  }
+
+  // ---- Sự kiện ----
+  const slider=$('theta');
+  slider.addEventListener('input',e=>{
+    $('projGroup').style.opacity=0;   // ẩn hình chiếu khi đang đổi góc
+    hideConclusion();                 // ẩn kết luận cũ, tránh hiện sai bucket
+    update(+e.target.value);
+  });
+  $('calc').addEventListener('click',()=>{
+    const deg=+slider.value;
+    $('projGroup').style.opacity=1;
+    update(deg,{animate:true});
+    revealConclusion(deg);
+  });
+  $('reset').addEventListener('click',()=>{
+    slider.value=60;$('projGroup').style.opacity=0;
+    hideConclusion();
+    update(60);
+  });
+
+  // ---- Khởi tạo ----
+  drawBoxM();drawBoxN();drawMNArrow();
+  update(60);
+})();
+</script>
+</body>
+</html>
