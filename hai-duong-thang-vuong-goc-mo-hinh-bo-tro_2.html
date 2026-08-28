@@ -232,7 +232,7 @@
 <body>
 <div id="app">
   <header>
-    <h1>Bài 22 · Hai đường thẳng vuông góc<span>Mô hình bổ trợ — đoạn vuông góc chung không cố định một hướng</span></h1>
+    <h1>Bài 22 · Hai đường thẳng vuông góc<span>Mô hình bổ trợ — xác định góc giữa hai đường thẳng chéo nhau bằng đường song song qua một điểm bất kỳ</span></h1>
     <div class="tabs">
       <button class="tab-btn active" id="tabBtn1" type="button">Cảnh 1: Đổi cặp đường thẳng</button>
       <button class="tab-btn" id="tabBtn2" type="button">Cảnh 2: Xoay tự do</button>
@@ -245,7 +245,7 @@
       <div class="canvas-container" id="container1"></div>
 
       <div class="overlay info-box panel">
-        <p>Mỗi cặp đường thẳng chéo nhau có một đoạn vuông góc chung riêng. Hướng của đoạn này do chính hai đường thẳng quyết định, không cố định theo một phương nào.</p>
+        <p>Một cặp đường thẳng chéo nhau luôn tạo với nhau một góc xác định — không phụ thuộc vào điểm O bạn chọn trên đường a để dựng đường song song.</p>
       </div>
 
       <div class="overlay controls-box panel">
@@ -257,13 +257,12 @@
         <div class="legend">
           <div class="legend-item"><span class="swatch" style="background:#FFA94D"></span>Đường a</div>
           <div class="legend-item"><span class="swatch" style="background:#3FD8B5"></span>Đường b</div>
-          <div class="legend-item"><span class="swatch" style="background:#C9CEDC"></span>Đoạn vuông góc chung</div>
         </div>
         <div class="angle-box">
           <div class="angle-readout" id="angleReadout">Góc giữa hai đường: 90°</div>
           <div class="angle-buttons">
             <button class="angle-btn" id="computeAngleBtn" type="button">Tính góc</button>
-            <button class="angle-btn" id="resetAngleBtn" type="button" disabled>Đưa b về vị trí ban đầu</button>
+            <button class="angle-btn" id="resetAngleBtn" type="button" disabled>Ẩn đường song song b′</button>
           </div>
         </div>
       </div>
@@ -276,7 +275,7 @@
       <div class="canvas-container" id="container2"></div>
 
       <div class="overlay info-box panel">
-        <p>Xoay thử nhiều góc khác nhau — đoạn vuông góc chung vẫn luôn vuông góc với cả hai đường thẳng, dù nhìn từ hướng nào.</p>
+        <p>Góc giữa hai đường thẳng chéo nhau là một đại lượng thực trong không gian ba chiều — xoay camera theo bất kỳ hướng nào, số đo góc và quan hệ song song giữa b và b′ đều không đổi.</p>
       </div>
 
       <div class="overlay controls-box panel">
@@ -310,39 +309,42 @@ const COLOR_B = 0x3FD8B5;
 const COLOR_PERP = 0xC9CEDC;
 
 // Kích thước dùng chung — được chọn (và kiểm chứng bằng script riêng, xem ghi chú
-// cuối file) sao cho TOÀN BỘ hai đường thẳng + đoạn vuông góc chung của MỖI cặp
-// nằm gọn trong một hình cầu bao bán kính ~2.2 (< 2.5), dùng chung một camera cố định.
+// cuối file) sao cho TOÀN BỘ hai đường thẳng của MỖI cặp, kể cả điểm O dùng để
+// dựng đường song song b′ (mục "Tính góc" bên dưới), nằm gọn trong một hình cầu
+// bao bán kính ~2.2 (< 2.5), dùng chung một camera cố định.
 const RANGE = 2.05; // nửa độ dài mỗi đường thẳng, tính từ điểm neo P1/P2 ra hai phía
 
 // Mỗi cặp: đường a đi qua P1 theo phương d1, đường b đi qua P2 theo phương d2.
-// P1, P2 được đặt đối xứng qua gốc toạ độ theo đúng phương của đoạn vuông góc
-// chung (= d1 × d2), nên chân vuông góc luôn rơi đúng vào P1 và P2 (kiểm chứng
-// bằng công thức tổng quát bên dưới, không giả định trước).
-// Hướng đoạn vuông góc chung của 3 cặp khác biệt rõ khi nhìn từ camera mặc định:
-// cặp 1 gần như nằm ngang, cặp 2 thẳng đứng, cặp 3 nằm chéo.
+// P1, P2 được đặt đối xứng qua gốc toạ độ theo đúng phương vuông góc với cả d1
+// và d2 (= d1 × d2), nên hai chân của đoạn nối vuông góc giữa a và b luôn rơi
+// đúng vào P1 và P2 (kiểm chứng bằng công thức tổng quát bên dưới, không giả
+// định trước) — nhờ vậy điểm O = P1 luôn là một vị trí đẹp, dễ quan sát trên a.
+// Hướng đoạn nối vuông góc giữa a và b của 3 cặp khác biệt rõ khi nhìn từ camera
+// mặc định: cặp 1 gần như nằm ngang, cặp 2 thẳng đứng, cặp 3 nằm chéo — cho thấy
+// góc giữa hai đường (qua b′ và O) không phụ thuộc hướng đó.
 const PAIRS = [
-  { // Cặp 1 — đoạn vuông góc chung gần như nằm ngang · góc giữa hai đường 90°
+  { // Cặp 1 — đoạn nối vuông góc giữa a và b gần như nằm ngang · góc giữa hai đường 90°
     P1: [0.8, 0, 0], d1: [0, 1, 1],
     P2: [-0.8, 0, 0], d2: [0, 1, -1]
   },
-  { // Cặp 2 — đoạn vuông góc chung gần như thẳng đứng · góc giữa hai đường 90°
+  { // Cặp 2 — đoạn nối vuông góc giữa a và b gần như thẳng đứng · góc giữa hai đường 90°
     P1: [0, -0.8, 0], d1: [1, 0, 1],
     P2: [0, 0.8, 0], d2: [1, 0, -1]
   },
-  { // Cặp 3 — đoạn vuông góc chung nằm chéo · góc giữa hai đường 60°
+  { // Cặp 3 — đoạn nối vuông góc giữa a và b nằm chéo · góc giữa hai đường 60°
     P1: [-0.4619, -0.4619, 0.4619], d1: [-1, 1, 0],
     P2: [0.4619, 0.4619, -0.4619], d2: [0, 1, 1]
   }
 ];
 
 /* ============================================================
-   HÀM TÍNH ĐOẠN VUÔNG GÓC CHUNG (KHÔNG HARD-CODE KẾT QUẢ)
+   HÀM TÍNH HAI CHÂN CỦA ĐOẠN NỐI VUÔNG GÓC GIỮA HAI ĐƯỜNG CHÉO NHAU
    Cho hai đường thẳng chéo nhau:
      line1(t) = P1 + t*d1
      line2(s) = P2 + s*d2
-   Đoạn nối hai chân vuông góc w = (P1 + t d1) - (P2 + s d2) phải vuông góc
-   với cả d1 và d2, dẫn tới hệ phương trình tuyến tính 2 ẩn (t, s), giải
-   bằng quy tắc Cramer.
+   Đoạn nối hai chân này (chân trên a dùng làm điểm O ở mục "Tính góc" bên dưới)
+   vuông góc với cả d1 và d2, dẫn tới hệ phương trình tuyến tính 2 ẩn (t, s), giải
+   bằng quy tắc Cramer. Hàm này chỉ tính toạ độ — không hard-code kết quả.
    ============================================================ */
 function closestPointsOnSkewLines(P1, d1, P2, d2) {
   const r = new THREE.Vector3().subVectors(P1, P2);
@@ -435,8 +437,8 @@ function computeAngleDeg(d1, d2) {
 }
 
 // Vẽ một cung tròn nhỏ tại "center" thể hiện góc giữa hai phương d1, d2 (độ dài
-// angleDegVal đã tính sẵn ở trên) — dùng để minh hoạ trực quan sau khi đường b
-// đã tịnh tiến tới cùng đi qua center với đường a.
+// angleDegVal đã tính sẵn ở trên) — dùng để minh hoạ trực quan tại điểm O, sau khi
+// đường b′ (song song với b, dựng qua O) đã hiện xong.
 function buildAngleArc(center, d1, d2, angleDegVal) {
   const u1 = d1.clone().normalize();
   const u2raw = d2.clone().normalize();
@@ -592,20 +594,11 @@ scene1.add(rodB);
 const labelB = makeLabel("đường b", "#3FD8B5");
 scene1.add(labelB);
 
+// Đoạn nối vuông góc giữa a và b (rodPerp/sphereFoot*/labelPerp cũ) đã bị ẩn hoàn
+// toàn khỏi mô hình — không add vào scene, không render ở bất kỳ thời điểm nào.
+// computeFeet()/closestPointsOnSkewLines() vẫn chạy như cũ: kết quả không dùng để
+// vẽ đoạn nối nữa, mà foot1 được dùng làm điểm O ở mục "Tính góc" bên dưới.
 let feet1 = computeFeet(s1.pair);
-const rodPerp = makeRod(feet1.foot1, feet1.foot2, PERP_RADIUS, COLOR_PERP);
-rodPerp.userData.radius = PERP_RADIUS;
-scene1.add(rodPerp);
-
-const sphereFoot1 = makeSphere(FOOT_RADIUS, COLOR_PERP);
-sphereFoot1.position.copy(feet1.foot1);
-scene1.add(sphereFoot1);
-const sphereFoot2 = makeSphere(FOOT_RADIUS, COLOR_PERP);
-sphereFoot2.position.copy(feet1.foot2);
-scene1.add(sphereFoot2);
-
-const labelPerp = makeLabel("đoạn vuông góc chung", "#C9CEDC");
-scene1.add(labelPerp);
 
 function placeLineLabels(pairData, ep) {
   const dirA = v3(pairData.d1).normalize();
@@ -613,35 +606,30 @@ function placeLineLabels(pairData, ep) {
   labelA.position.copy(ep.a1).addScaledVector(dirA, LABEL_LINE_OFFSET);
   labelB.position.copy(ep.b1).addScaledVector(dirB, LABEL_LINE_OFFSET);
 }
-function placePerpLabel(foot1, foot2) {
-  const segDir = new THREE.Vector3().subVectors(foot2, foot1);
-  if (segDir.lengthSq() < 1e-8) segDir.set(1, 0, 0);
-  segDir.normalize();
-  const mid = foot1.clone().add(foot2).multiplyScalar(0.5);
-  const off = perpOffsetDir(segDir).multiplyScalar(LABEL_PERP_OFFSET);
-  labelPerp.position.copy(mid).add(off);
-}
 placeLineLabels(s1.pair, ep);
-placePerpLabel(feet1.foot1, feet1.foot2);
-
-// --- Máy trạng thái chuyển cảnh khi đổi cặp (khai báo trước để khối "Tính góc"
-// bên dưới có thể tham chiếu animState ngay khi khởi tạo) ---
-const FADE_OUT_MS = 500;
-const DRAW_IN_MS = 1000;
-let animState = "idle"; // idle | fadeOut | drawIn
-let animStart = 0;
-let pendingIndex = 0;
-let pendingFeet = null;
 
 /* ------------------------------------------------------------
-   TÍNH NĂNG "TÍNH GÓC" — tịnh tiến đường b (giữ nguyên phương) từ vị trí
-   hiện tại (qua chân Q trên đường b) tới vị trí đi qua chân P trên đường a,
-   rồi vẽ cung minh hoạ góc giữa hai đường tại P.
+   TÍNH NĂNG "TÍNH GÓC" — đường b đứng yên tại vị trí gốc trong suốt quá trình.
+   O = feet1.foot1: một điểm bất kỳ trên đường a (tái dùng đúng phép tính chân
+   của đoạn nối vuông góc ở computeFeet(), chỉ đổi cách diễn giải — không đổi
+   công thức). Khi bấm "Tính góc": dựng thêm một đường b′ đi qua O, song song
+   với b (dùng đúng vectơ tịnh tiến shift = feet1.foot1 - feet1.foot2 để tính
+   toạ độ hai đầu mút, nhưng để TẠO đối tượng mới thay vì DI CHUYỂN rodB),
+   fade-in tại đúng vị trí cuối rồi vẽ cung góc tại O bằng buildAngleArc()
+   (giữ nguyên, không đổi). Đây đúng theo định nghĩa SGK: chọn một điểm O bất
+   kỳ trên a, vẽ b′ qua O song song với b, góc giữa a và b′ chính là góc cần
+   tìm — không phụ thuộc O ở đâu, không cần đoạn nối vuông góc giữa a và b.
    ------------------------------------------------------------ */
-const ANGLE_MOVE_MS = 1200;
-let angleState = "atQ"; // atQ | movingToP | atP | movingToQ
-let angleAnimStart = 0;
+const ANGLE_FADE_MS = 500;
+let angleState = "hidden"; // hidden | fadingIn | shown | fadingOut
+let angleFadeStart = 0;
 let angleArcGroup = null;
+let bPrimeObjects = null; // { rodBPrime, labelBPrime, sphereO, labelO }
+
+// Điểm O nằm trên đường a nên dùng màu a để gợi liên tưởng đó; cố tình KHÔNG
+// dùng lại COLOR_PERP để tránh gợi nhớ đoạn nối vuông góc giữa a và b (khái
+// niệm thuộc bài Khoảng cách, học sau — không đưa vào phạm vi bài này).
+const COLOR_O = COLOR_A;
 
 const computeAngleBtn = document.getElementById("computeAngleBtn");
 const resetAngleBtn = document.getElementById("resetAngleBtn");
@@ -670,131 +658,131 @@ function showAngleArc() {
   scene1.add(angleArcGroup);
 }
 
+// Dựng b′ + chấm/nhãn O, khởi tạo ở opacity 0 (sẽ fade-in trong updateAngleFade).
+function buildBPrimeObjects(pairData, feet) {
+  const shift = feet.foot1.clone().sub(feet.foot2); // vectơ tịnh tiến b → b′ (công thức cũ)
+  const curEp = lineEndpoints(pairData);
+  const bp0 = curEp.b0.clone().add(shift);
+  const bp1 = curEp.b1.clone().add(shift);
+
+  const rodBPrime = makeRod(bp0, bp1, ROD_RADIUS, COLOR_B, 0);
+  rodBPrime.userData.radius = ROD_RADIUS;
+
+  const dirB = v3(pairData.d2).normalize();
+  const labelBPrime = makeLabel("b′ (song song với b)", "#3FD8B5");
+  labelBPrime.position.copy(bp1).addScaledVector(dirB, LABEL_LINE_OFFSET);
+  labelBPrime.element.style.opacity = 0;
+
+  const sphereO = makeSphere(FOOT_RADIUS, COLOR_O, 0);
+  sphereO.position.copy(feet.foot1);
+
+  const labelO = makeLabel("O", "#FFA94D");
+  const dirA = v3(pairData.d1).normalize();
+  labelO.position.copy(feet.foot1).add(perpOffsetDir(dirA).multiplyScalar(LABEL_PERP_OFFSET));
+  labelO.element.style.opacity = 0;
+
+  return { rodBPrime, labelBPrime, sphereO, labelO };
+}
+
+function setBPrimeOpacity(op) {
+  if (!bPrimeObjects) return;
+  bPrimeObjects.rodBPrime.material.opacity = op;
+  bPrimeObjects.sphereO.material.opacity = op;
+  bPrimeObjects.labelBPrime.element.style.opacity = op;
+  bPrimeObjects.labelO.element.style.opacity = op;
+}
+
+function removeBPrimeObjects() {
+  if (!bPrimeObjects) return;
+  const { rodBPrime, labelBPrime, sphereO, labelO } = bPrimeObjects;
+  scene1.remove(rodBPrime); rodBPrime.geometry.dispose(); rodBPrime.material.dispose();
+  scene1.remove(sphereO); sphereO.geometry.dispose(); sphereO.material.dispose();
+  scene1.remove(labelBPrime); labelBPrime.element.remove();
+  scene1.remove(labelO); labelO.element.remove();
+  bPrimeObjects = null;
+}
+
 function updateAngleButtons() {
-  const busy = animState !== "idle";
-  computeAngleBtn.disabled = busy || angleState !== "atQ";
-  resetAngleBtn.disabled = busy || angleState !== "atP";
+  computeAngleBtn.disabled = angleState !== "hidden";
+  resetAngleBtn.disabled = angleState !== "shown";
 }
 updateAngleButtons();
 
 computeAngleBtn.addEventListener("click", () => {
-  if (animState !== "idle" || angleState !== "atQ") return;
-  const curEp = lineEndpoints(s1.pair);
-  s1.bOrig = { b0: curEp.b0, b1: curEp.b1 };
-  s1.angleShift = feet1.foot1.clone().sub(feet1.foot2); // P - Q
-  angleState = "movingToP";
-  angleAnimStart = performance.now();
+  if (angleState !== "hidden") return;
+  bPrimeObjects = buildBPrimeObjects(s1.pair, feet1);
+  scene1.add(bPrimeObjects.rodBPrime);
+  scene1.add(bPrimeObjects.labelBPrime);
+  scene1.add(bPrimeObjects.sphereO);
+  scene1.add(bPrimeObjects.labelO);
+  // GHI CHÚ CHO PRD: b và b' sẽ nhấp nháy nhẹ (đồng bộ) để học sinh nhận ra
+  // chúng song song — hiệu ứng nháy chỉ cần mô tả trong PRD, không build ở prototype này.
+  angleState = "fadingIn";
+  angleFadeStart = performance.now();
   updateAngleButtons();
 });
 
 resetAngleBtn.addEventListener("click", () => {
-  if (animState !== "idle" || angleState !== "atP") return;
-  angleState = "movingToQ";
-  angleAnimStart = performance.now();
+  if (angleState !== "shown") return;
+  hideAngleArc();
+  angleState = "fadingOut";
+  angleFadeStart = performance.now();
   updateAngleButtons();
 });
 
-function updateAngleAnim(now) {
-  if (angleState !== "movingToP" && angleState !== "movingToQ") return;
-  let t = (now - angleAnimStart) / ANGLE_MOVE_MS;
+function updateAngleFade(now) {
+  if (angleState !== "fadingIn" && angleState !== "fadingOut") return;
+  let t = (now - angleFadeStart) / ANGLE_FADE_MS;
   if (t > 1) t = 1;
-  const eased = easeInOutCubic(t);
-  const progress = angleState === "movingToP" ? eased : 1 - eased;
-  const shift = s1.angleShift.clone().multiplyScalar(progress);
-  const nb0 = s1.bOrig.b0.clone().add(shift);
-  const nb1 = s1.bOrig.b1.clone().add(shift);
-  replaceRod(rodB, nb0, nb1);
-  const dirB = v3(s1.pair.d2).normalize();
-  labelB.position.copy(nb1).addScaledVector(dirB, LABEL_LINE_OFFSET);
+  const op = angleState === "fadingIn" ? t : 1 - t;
+  setBPrimeOpacity(op);
   if (t >= 1) {
-    if (angleState === "movingToP") {
-      angleState = "atP";
+    if (angleState === "fadingIn") {
+      angleState = "shown";
       showAngleArc();
     } else {
-      angleState = "atQ";
-      hideAngleArc();
+      removeBPrimeObjects();
+      angleState = "hidden";
     }
     updateAngleButtons();
   }
 }
 
 const pairButtons = Array.from(document.querySelectorAll(".pair-btn"));
-function setButtonsDisabled(disabled) {
-  pairButtons.forEach(btn => { btn.disabled = disabled; });
-}
 function setActiveButton(index) {
   pairButtons.forEach(btn => btn.classList.toggle("active", Number(btn.dataset.pair) === index));
 }
 setActiveButton(0);
 
+// Đổi cặp có hiệu lực ngay lập tức — không còn animation fade cho đoạn nối
+// vuông góc giữa a và b (đã bị ẩn hoàn toàn, xem phía trên), nên không cần
+// máy trạng thái fadeOut/drawIn nữa: chỉ cần cập nhật ngay vị trí rodA/rodB/nhãn.
 function requestPairChange(index) {
-  if (animState !== "idle" || index === currentPairIndex1) return;
-  // Nếu đang ở trạng thái đã (hoặc đang) trượt đường b, huỷ ngay để cặp mới
-  // luôn bắt đầu từ trạng thái ban đầu (không giữ lại trạng thái của cặp cũ).
-  if (angleState !== "atQ") {
+  if (index === currentPairIndex1) return;
+  // Nếu b′/O/cung góc đang hiện (hoặc đang fade), ẩn/remove ngay lập tức — không
+  // để lại object mồ côi khi chuyển sang cặp mới.
+  if (angleState !== "hidden") {
     hideAngleArc();
-    angleState = "atQ";
+    removeBPrimeObjects();
+    angleState = "hidden";
   }
-  pendingIndex = index;
-  animState = "fadeOut";
-  animStart = performance.now();
-  setButtonsDisabled(true);
-  updateAngleButtons();
+  currentPairIndex1 = index;
+  s1.pair = PAIRS[currentPairIndex1];
+  const newEp = lineEndpoints(s1.pair);
+  replaceRod(rodA, newEp.a0, newEp.a1);
+  replaceRod(rodB, newEp.b0, newEp.b1);
+  placeLineLabels(s1.pair, newEp);
+  refreshAngleReadout();
+  feet1 = computeFeet(s1.pair);
   setActiveButton(index);
+  updateAngleButtons();
 }
 pairButtons.forEach(btn => {
   btn.addEventListener("click", () => requestPairChange(Number(btn.dataset.pair)));
 });
 
 function updateScene1(now) {
-  if (animState === "fadeOut") {
-    let t = (now - animStart) / FADE_OUT_MS;
-    if (t > 1) t = 1;
-    const op = 1 - t;
-    rodPerp.material.opacity = op;
-    sphereFoot1.material.opacity = op;
-    sphereFoot2.material.opacity = op;
-    labelPerp.element.style.opacity = op;
-    if (t >= 1) {
-      // Đổi hai đường thẳng sang toạ độ cặp mới
-      currentPairIndex1 = pendingIndex;
-      s1.pair = PAIRS[currentPairIndex1];
-      const newEp = lineEndpoints(s1.pair);
-      replaceRod(rodA, newEp.a0, newEp.a1);
-      replaceRod(rodB, newEp.b0, newEp.b1);
-      placeLineLabels(s1.pair, newEp);
-      refreshAngleReadout();
-
-      pendingFeet = computeFeet(s1.pair);
-      replaceRod(rodPerp, pendingFeet.foot1, pendingFeet.foot1); // độ dài 0 lúc bắt đầu vẽ
-      sphereFoot1.position.copy(pendingFeet.foot1);
-      sphereFoot2.position.copy(pendingFeet.foot2);
-      sphereFoot1.material.opacity = 0;
-      sphereFoot2.material.opacity = 0;
-      rodPerp.material.opacity = 1;
-      labelPerp.element.style.opacity = 0;
-      placePerpLabel(pendingFeet.foot1, pendingFeet.foot2);
-
-      animState = "drawIn";
-      animStart = now;
-    }
-  } else if (animState === "drawIn") {
-    let t = (now - animStart) / DRAW_IN_MS;
-    if (t > 1) t = 1;
-    const eased = easeInOutCubic(t);
-    const currentEnd = pendingFeet.foot1.clone().lerp(pendingFeet.foot2, eased);
-    replaceRod(rodPerp, pendingFeet.foot1, currentEnd);
-    sphereFoot1.material.opacity = smoothstep(0.0, 0.15, t);
-    sphereFoot2.material.opacity = smoothstep(0.82, 1.0, t);
-    labelPerp.element.style.opacity = t;
-    if (t >= 1) {
-      feet1 = pendingFeet;
-      animState = "idle";
-      setButtonsDisabled(false);
-      updateAngleButtons();
-    }
-  }
-  updateAngleAnim(now);
+  updateAngleFade(now);
 }
 
 /* ============================================================
@@ -836,23 +824,31 @@ const labelB2 = makeLabel("đường b", "#3FD8B5");
 labelB2.position.copy(ep2.b1).addScaledVector(v3(pair1Data.d2).normalize(), LABEL_LINE_OFFSET);
 scene2.add(labelB2);
 
+// Đoạn nối vuông góc giữa a và b (rodPerp2/sphereFoot*b/labelPerp2 cũ) bị ẩn hoàn
+// toàn ở đây (giống Cảnh 1) — không add vào scene2. Thay vào đó, dựng sẵn và hiện
+// TĨNH ngay khi vào tab (không cần nút bấm, chỉ có xoay camera tự do): đường b′
+// song song với b đi qua điểm O trên a, cùng chấm/nhãn O và cung góc — tái dùng
+// đúng các hàm ở Cảnh 1 (computeFeet, makeRod, makeSphere, makeLabel,
+// perpOffsetDir, computeAngleDeg, buildAngleArc — tất cả giữ nguyên, không đổi).
 const feet2 = computeFeet(pair1Data);
-const rodPerp2 = makeRod(feet2.foot1, feet2.foot2, PERP_RADIUS, COLOR_PERP);
-scene2.add(rodPerp2);
-const sphereFoot1b = makeSphere(FOOT_RADIUS, COLOR_PERP);
-sphereFoot1b.position.copy(feet2.foot1);
-scene2.add(sphereFoot1b);
-const sphereFoot2b = makeSphere(FOOT_RADIUS, COLOR_PERP);
-sphereFoot2b.position.copy(feet2.foot2);
-scene2.add(sphereFoot2b);
+const angleDeg2 = computeAngleDeg(v3(pair1Data.d1), v3(pair1Data.d2));
+const shift2 = feet2.foot1.clone().sub(feet2.foot2);
 
-const labelPerp2 = makeLabel("đoạn vuông góc chung", "#C9CEDC");
-{
-  const segDir = new THREE.Vector3().subVectors(feet2.foot2, feet2.foot1).normalize();
-  const mid = feet2.foot1.clone().add(feet2.foot2).multiplyScalar(0.5);
-  labelPerp2.position.copy(mid).add(perpOffsetDir(segDir).multiplyScalar(LABEL_PERP_OFFSET));
-}
-scene2.add(labelPerp2);
+const rodBPrime2 = makeRod(ep2.b0.clone().add(shift2), ep2.b1.clone().add(shift2), ROD_RADIUS, COLOR_B);
+scene2.add(rodBPrime2);
+const labelBPrime2 = makeLabel("b′ (song song với b)", "#3FD8B5");
+labelBPrime2.position.copy(ep2.b1.clone().add(shift2)).addScaledVector(v3(pair1Data.d2).normalize(), LABEL_LINE_OFFSET);
+scene2.add(labelBPrime2);
+
+const sphereO2 = makeSphere(FOOT_RADIUS, COLOR_O);
+sphereO2.position.copy(feet2.foot1);
+scene2.add(sphereO2);
+const labelO2 = makeLabel("O", "#FFA94D");
+labelO2.position.copy(feet2.foot1).add(perpOffsetDir(v3(pair1Data.d1).normalize()).multiplyScalar(LABEL_PERP_OFFSET));
+scene2.add(labelO2);
+
+const angleArcGroup2 = buildAngleArc(feet2.foot1, v3(pair1Data.d1), v3(pair1Data.d2), angleDeg2);
+scene2.add(angleArcGroup2);
 
 document.getElementById("resetViewBtn").addEventListener("click", () => {
   camera2.position.copy(INIT_CAM_POS);
