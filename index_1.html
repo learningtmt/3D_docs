@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài 20 — Tăng trưởng dân số theo hàm số mũ</title>
+<style>
+:root{
+  --bg-top:#0F1420; --bg-bottom:#1B2338;
+  --panel-bg:rgba(15,20,32,0.72); --panel-border:rgba(255,255,255,0.08);
+  --text-main:#E7EAF3; --text-dim:#9AA3B8; --accent:#5B7FFF;
+}
+html,body{
+  height:100%; margin:0;
+  font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  background:linear-gradient(160deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
+  color:var(--text-main); overflow:hidden;
+}
+.label3d{
+  font-size:13px; font-weight:700; padding:2px 7px;
+  background:rgba(10,13,22,0.6); border-radius:5px;
+  white-space:nowrap; user-select:none; text-shadow:0 1px 3px rgba(0,0,0,.7);
+}
+.panel{
+  background:var(--panel-bg); border:1px solid var(--panel-border);
+  border-radius:12px; padding:14px 16px; backdrop-filter:blur(6px);
+}
+
+#app{ position:absolute; inset:0; }
+.canvas-container{ position:absolute; inset:0; }
+
+.title-panel{
+  position:absolute; top:16px; left:16px; max-width:320px;
+}
+.title-panel h1{
+  margin:0 0 4px 0; font-size:16px; font-weight:800; letter-spacing:.2px;
+}
+.title-panel p{
+  margin:0; font-size:12.5px; color:var(--text-dim); line-height:1.5;
+}
+
+.pop-hero{
+  position:absolute; top:16px; left:50%; transform:translateX(-50%);
+  text-align:center; padding:10px 30px 16px; max-width:90vw;
+}
+.pop-hero-label{
+  font-size:12.5px; color:var(--text-dim); text-transform:uppercase;
+  letter-spacing:.5px; margin-bottom:4px;
+}
+.pop-hero-value{
+  font-size:52px; font-weight:800; font-variant-numeric:tabular-nums;
+  line-height:1; white-space:nowrap;
+}
+.pop-hero-value .unit{
+  font-size:18px; font-weight:600; color:var(--text-dim); margin-left:8px;
+}
+
+.stats-panel{
+  position:absolute; bottom:16px; left:16px; max-width:420px;
+  display:flex; flex-wrap:wrap; align-items:center; gap:14px 24px;
+}
+
+.chart-panel{
+  position:absolute; bottom:16px; right:16px;
+  width:280px; height:200px; box-sizing:border-box;
+  display:flex; flex-direction:column; gap:6px;
+}
+.chart-title{
+  font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.4px;
+}
+#popChart{ width:100%; flex:1; overflow:visible; }
+.axis-line{ stroke:rgba(255,255,255,0.28); stroke-width:1; }
+.axis-label{ font-size:9px; fill:var(--text-dim); }
+.chart-curve{ fill:none; stroke:var(--accent); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.chart-dot{ fill:#8FD19E; stroke:#0F1420; stroke-width:1.5; }
+
+@media (max-width:900px){
+  .chart-panel{ left:16px; right:16px; bottom:196px; width:auto; }
+  .stats-panel{ right:16px; max-width:none; }
+}
+@media (max-width:700px){
+  .pop-hero{ top:104px; }
+  .pop-hero-value{ font-size:36px; }
+}
+
+.slider-row{ display:flex; align-items:center; gap:12px; flex:1 1 100%; min-width:260px; }
+.slider-row input[type=range]{
+  flex:1; accent-color:var(--accent); height:4px; cursor:pointer;
+}
+.year-badge{
+  font-variant-numeric:tabular-nums; font-weight:800; font-size:15px;
+  min-width:64px; text-align:center;
+  background:rgba(91,127,255,0.18); border:1px solid rgba(91,127,255,0.4);
+  border-radius:8px; padding:4px 8px; color:#C9D4FF;
+}
+
+.stat{ display:flex; flex-direction:column; gap:2px; min-width:96px; }
+.stat .lbl{ font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.4px; }
+.stat .val{ font-size:17px; font-weight:800; font-variant-numeric:tabular-nums; }
+.stat .val.accent{ color:#8FD19E; }
+
+.delta-line{
+  flex-basis:100%; font-size:12.5px; color:#FFD98E;
+  min-height:16px;
+}
+.delta-line b{ font-variant-numeric:tabular-nums; }
+</style>
+</head>
+<body>
+<script>
+(function () {
+  if (location.protocol === "file:") {
+    var el = document.createElement("div");
+    el.setAttribute("style", [
+      "position:fixed", "inset:0", "z-index:9999",
+      "background:rgba(8,10,18,0.95)",
+      "display:flex", "align-items:center", "justify-content:center",
+      "text-align:center", "padding:32px", "box-sizing:border-box",
+      "font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif",
+      "color:#ffffff", "font-size:16px", "line-height:1.6"
+    ].join(";"));
+    el.innerHTML =
+      '<div style="max-width:560px;">' +
+      '<div style="font-size:22px;font-weight:800;margin-bottom:12px;">⚠️ Không thể mở trực tiếp file này</div>' +
+      '<div>Trình duyệt chặn tải thư viện khi mở bằng cách bấm đúp (giao thức <code>file://</code>).<br><br>' +
+      'Hãy mở qua server cục bộ, ví dụ:<br>' +
+      '<code style="display:inline-block;margin-top:6px;padding:4px 10px;background:rgba(255,255,255,0.14);border-radius:6px;">python3 -m http.server</code>' +
+      '<br><br>hoặc mở qua đường link Netlify đã triển khai.</div>' +
+      '</div>';
+    document.body.appendChild(el);
+  }
+})();
+</script>
+<div id="app">
+  <div class="canvas-container"></div>
+
+  <div class="panel title-panel">
+    <h1>Tăng trưởng dân số theo hàm số mũ</h1>
+    <p>Mỗi ngôi nhà ứng với 1 triệu người. Kéo thanh trượt để xem khu dân cư "mọc" theo công thức
+      A(t) = P₀·e^(rt), với P₀ = 97,34 triệu người (năm 2020), r = 0,91%/năm.</p>
+  </div>
+
+  <div class="panel pop-hero">
+    <div class="pop-hero-label" id="popHeroLabel">Dân số Việt Nam năm 2020</div>
+    <div class="pop-hero-value" id="popHeroValue">97,34<span class="unit">triệu người</span></div>
+  </div>
+
+  <div class="panel stats-panel">
+    <div class="slider-row">
+      <span class="year-badge" id="yearBadge">2020</span>
+      <input type="range" id="tSlider" min="0" max="30" step="1" value="0">
+    </div>
+    <div class="stat">
+      <span class="lbl">Số nhà</span>
+      <span class="val accent" id="houseVal">97</span>
+    </div>
+    <div class="delta-line" id="yoyLine">
+      So với năm trước: <b id="yoyVal">—</b>
+    </div>
+  </div>
+
+  <div class="panel chart-panel">
+    <div class="chart-title">Dân số theo năm (triệu người)</div>
+    <svg id="popChart" viewBox="0 0 240 150" preserveAspectRatio="xMidYMid meet">
+      <line class="axis-line" x1="32" y1="128" x2="232" y2="128"></line>
+      <line class="axis-line" x1="32" y1="10" x2="32" y2="128"></line>
+      <text class="axis-label" x="32" y="142">2020</text>
+      <text class="axis-label" x="232" y="142" text-anchor="end">2050</text>
+      <text class="axis-label" x="28" y="14" text-anchor="end">130</text>
+      <text class="axis-label" x="28" y="131" text-anchor="end">95</text>
+      <path id="chartPath" class="chart-curve"></path>
+      <circle id="chartDot" class="chart-dot" r="3.2"></circle>
+    </svg>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
+
+/* ===================== Renderer / camera / label dùng chung ===================== */
+function buildLights(scene) {
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  const dir = new THREE.DirectionalLight(0xffffff, 0.95);
+  dir.position.set(6, 10, 8);
+  scene.add(dir);
+  const fill = new THREE.DirectionalLight(0x88a0ff, 0.25);
+  fill.position.set(-6, -3, -5);
+  scene.add(fill);
+}
+function makeRendererSet(container, initCamPos, initTarget) {
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+  container.appendChild(renderer.domElement);
+  const cssRenderer = new CSS2DRenderer();
+  cssRenderer.domElement.style.position = "absolute";
+  cssRenderer.domElement.style.top = "0";
+  cssRenderer.domElement.style.left = "0";
+  cssRenderer.domElement.style.pointerEvents = "none";
+  container.appendChild(cssRenderer.domElement);
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  camera.position.copy(initCamPos);
+  camera.lookAt(initTarget);
+  return { renderer, cssRenderer, camera };
+}
+// QUAN TRỌNG: tham số thứ 3 của renderer.setSize PHẢI là true — nó khiến three.js
+// đặt canvas.style.width/height đúng bằng kích thước container (đơn vị CSS px).
+// Nếu để false, canvas chỉ được đặt kích thước buffer vẽ nội bộ mà không co lại
+// về đúng khung hiển thị — trên màn hình Retina/HiDPI, canvas sẽ hiển thị to gấp
+// đôi khung chứa và bị overflow:hidden cắt mất phần lớn. Lỗi đã gặp thật.
+function syncSize(container, camera, renderer, cssRenderer) {
+  const w = Math.max(container.clientWidth, 1);
+  const h = Math.max(container.clientHeight, 1);
+  if (renderer.__w !== w || renderer.__h !== h) {
+    renderer.setSize(w, h, true);
+    cssRenderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.__w = w;
+    renderer.__h = h;
+  }
+}
+function makeLabel(text, cssColor) {
+  const div = document.createElement("div");
+  div.className = "label3d";
+  div.textContent = text;
+  div.style.color = cssColor;
+  const obj = new CSS2DObject(div);
+  obj.element = div;
+  return obj;
+}
+
+/* ===================== Nội dung riêng của bài ===================== */
+
+// --- Dữ liệu & công thức (đã verify bằng SymPy) ---
+const P0 = 97.34;          // triệu người, năm mốc 2020
+const R_RATE = 0.0091;     // tỉ lệ tăng dân số hằng năm
+const YEAR0 = 2020;
+const T_MAX = 30;
+const PEOPLE_PER_HOUSE = 1; // 1 nhà = 1 triệu người
+
+function population(t) {           // A(t) = P0 * e^(r*t)
+  return P0 * Math.exp(R_RATE * t);
+}
+function houseCountAt(t) {
+  return Math.round(population(t) / PEOPLE_PER_HOUSE);
+}
+function yoyIncrease(t) {          // phép trừ đơn thuần, không phải đạo hàm
+  return population(t) - population(Math.max(t - 1, 0));
+}
+function fmtVN(num, digits = 2) {
+  return num.toFixed(digits).replace(".", ",");
+}
+
+// Tự kiểm tra các mốc đối chiếu ngay khi tải trang
+console.log("[Kiểm tra] t=0  ->", fmtVN(population(0)), "| nhà:", houseCountAt(0), "(kỳ vọng 97,34 | 97)");
+console.log("[Kiểm tra] t=10 ->", fmtVN(population(10)), "| nhà:", houseCountAt(10), "(kỳ vọng 106,61 | 107)");
+console.log("[Kiểm tra] t=20 ->", fmtVN(population(20)), "| nhà:", houseCountAt(20), "(kỳ vọng 116,77 | 117)");
+console.log("[Kiểm tra] t=30 ->", fmtVN(population(30)), "| nhà:", houseCountAt(30), "(kỳ vọng 127,90 | 128)");
+console.log("[Kiểm tra YoY] t=1  ->", fmtVN(yoyIncrease(1)), "(kỳ vọng 0,89)");
+console.log("[Kiểm tra YoY] t=10 ->", fmtVN(yoyIncrease(10)), "(kỳ vọng 0,97)");
+console.log("[Kiểm tra YoY] t=20 ->", fmtVN(yoyIncrease(20)), "(kỳ vọng 1,06)");
+console.log("[Kiểm tra YoY] t=30 ->", fmtVN(yoyIncrease(30)), "(kỳ vọng 1,16)");
+
+// --- Sắp xếp xoắn ốc vàng (phyllotaxis), vị trí từng nhà cố định vĩnh viễn ---
+const GOLDEN_ANGLE = 137.5 * (Math.PI / 180);
+const SPACING_C = 0.62;
+function housePosition(i) {
+  const angle = i * GOLDEN_ANGLE;
+  const radius = SPACING_C * Math.sqrt(i + 1);
+  return new THREE.Vector3(radius * Math.cos(angle), 0, radius * Math.sin(angle));
+}
+
+// --- Scene setup ---
+const container = document.querySelector(".canvas-container");
+const scene = new THREE.Scene();
+
+const maxRadius = SPACING_C * Math.sqrt(houseCountAt(T_MAX));
+// initCamPos & controls.maxDistance được nhân theo sqrt(128/64) ≈ 1,414 so với
+// bản cũ (49→64 nhà), vì bán kính vòng xoắn ốc ở t=30 tăng đúng theo tỉ lệ đó
+// khi đổi PEOPLE_PER_HOUSE từ 2 xuống 1 (128 nhà thay vì 64 nhà ở cùng t=30).
+const initCamPos = new THREE.Vector3(10.607, 10.748, 13.576);
+const initTarget = new THREE.Vector3(0, 0.15, 0);
+
+const { renderer, cssRenderer, camera } = makeRendererSet(container, initCamPos, initTarget);
+buildLights(scene);
+
+// Nền đất
+const groundMat = new THREE.MeshStandardMaterial({ color: 0x232b45, roughness: 0.95, metalness: 0.0 });
+const ground = new THREE.Mesh(new THREE.CircleGeometry(maxRadius + 3, 48), groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -0.01;
+scene.add(ground);
+
+const grid = new THREE.GridHelper(2 * (maxRadius + 3), 28, 0x3a4570, 0x2a3255);
+grid.position.y = 0;
+scene.add(grid);
+
+// OrbitControls chuẩn (xoay tự do)
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.enablePan = false;
+controls.minDistance = 3;
+controls.maxDistance = 22; // nới ra để chứa trọn 128 nhà ở t=30 (xem ghi chú initCamPos)
+controls.target.copy(initTarget);
+controls.update();
+
+/* --- Nhà: box + mái chóp, 3 biến thể màu nhẹ --- */
+const BODY_COLORS = [0xE7DCC6, 0xE0D4B8, 0xD9CBAE];
+const ROOF_COLORS = [0xB5573D, 0x8C5B4B, 0xC46A3E];
+
+function createHouse(i) {
+  const group = new THREE.Group();
+  const variant = i % 3;
+
+  const bodyGeo = new THREE.BoxGeometry(0.46, 0.34, 0.46);
+  const bodyMat = new THREE.MeshStandardMaterial({ color: BODY_COLORS[variant], roughness: 0.85 });
+  const body = new THREE.Mesh(bodyGeo, bodyMat);
+  body.position.y = 0.17;
+  group.add(body);
+
+  const roofGeo = new THREE.ConeGeometry(0.36, 0.28, 4);
+  const roofMat = new THREE.MeshStandardMaterial({ color: ROOF_COLORS[variant], roughness: 0.7 });
+  const roof = new THREE.Mesh(roofGeo, roofMat);
+  roof.rotation.y = Math.PI / 4;
+  roof.position.y = 0.34 + 0.14;
+  group.add(roof);
+
+  const pos = housePosition(i);
+  group.position.set(pos.x, 0, pos.z);
+  group.rotation.y = (i * 0.6180339887) * Math.PI * 2; // hướng nhà đa dạng, không ảnh hưởng vị trí
+  group.scale.setScalar(0.0001);
+
+  return group;
+}
+
+// Lưu trữ nhà theo chỉ số cố định, không bao giờ đổi khi tổng số nhà đổi
+const houseSlots = new Array(houseCountAt(T_MAX)).fill(null);
+let currentCount = 0;
+const growing = []; // hiệu ứng phóng to nhà mới thêm
+
+function addHouse(i) {
+  const h = createHouse(i);
+  scene.add(h);
+  houseSlots[i] = h;
+  growing.push({ group: h, start: performance.now() });
+}
+function removeHouse(i) {
+  const h = houseSlots[i];
+  if (!h) return;
+  scene.remove(h);
+  h.traverse(obj => {
+    if (obj.geometry) obj.geometry.dispose();
+    if (obj.material) obj.material.dispose();
+  });
+  houseSlots[i] = null;
+  const gi = growing.findIndex(g => g.group === h);
+  if (gi !== -1) growing.splice(gi, 1);
+}
+function setHouseCount(n) {
+  if (n > currentCount) {
+    for (let i = currentCount; i < n; i++) addHouse(i);
+  } else if (n < currentCount) {
+    for (let i = currentCount - 1; i >= n; i--) removeHouse(i);
+  }
+  currentCount = n;
+}
+
+const GROW_MS = 250;
+function updateGrowingAnimations(now) {
+  for (let k = growing.length - 1; k >= 0; k--) {
+    const g = growing[k];
+    const e = (now - g.start) / GROW_MS;
+    if (e >= 1) {
+      g.group.scale.setScalar(1);
+      growing.splice(k, 1);
+    } else {
+      // easeOutBack nhẹ cho mềm mắt
+      const s = 1 - Math.pow(1 - e, 3);
+      g.group.scale.setScalar(Math.max(0.0001, s));
+    }
+  }
+}
+
+/* --- UI: thanh trượt & thông tin --- */
+const slider = document.getElementById("tSlider");
+const yearBadge = document.getElementById("yearBadge");
+const houseVal = document.getElementById("houseVal");
+const yoyVal = document.getElementById("yoyVal");
+const popHeroLabel = document.getElementById("popHeroLabel");
+const popHeroValue = document.getElementById("popHeroValue");
+
+/* --- Đồ thị A(t): trục cố định x∈[0,30] (năm 2020-2050), y∈[95,130] triệu người --- */
+const CHART_T_MIN = 0, CHART_T_MAX = T_MAX;
+const CHART_POP_MIN = 95, CHART_POP_MAX = 130;
+const CHART_PAD_L = 32, CHART_PAD_R = 8, CHART_PAD_T = 10, CHART_PAD_B = 22;
+const CHART_W = 240, CHART_H = 150;
+const CHART_PLOT_W = CHART_W - CHART_PAD_L - CHART_PAD_R;
+const CHART_PLOT_H = CHART_H - CHART_PAD_T - CHART_PAD_B;
+const chartPathEl = document.getElementById("chartPath");
+const chartDotEl = document.getElementById("chartDot");
+
+function chartX(t) {
+  return CHART_PAD_L + ((t - CHART_T_MIN) / (CHART_T_MAX - CHART_T_MIN)) * CHART_PLOT_W;
+}
+function chartY(pop) {
+  const ratio = (pop - CHART_POP_MIN) / (CHART_POP_MAX - CHART_POP_MIN);
+  return CHART_PAD_T + (1 - ratio) * CHART_PLOT_H;
+}
+function updateChart(tCur) {
+  const pts = [];
+  for (let tt = 0; tt <= tCur; tt++) {
+    pts.push(`${chartX(tt).toFixed(2)},${chartY(population(tt)).toFixed(2)}`);
+  }
+  chartPathEl.setAttribute("d", pts.length ? "M" + pts.join(" L ") : "");
+  chartDotEl.setAttribute("cx", chartX(tCur).toFixed(2));
+  chartDotEl.setAttribute("cy", chartY(population(tCur)).toFixed(2));
+}
+
+function updateUI() {
+  const t = Number(slider.value);
+  const year = YEAR0 + t;
+  const pop = population(t);
+  const houses = houseCountAt(t);
+
+  yearBadge.textContent = String(year);
+  houseVal.textContent = String(houses);
+
+  popHeroLabel.textContent = "Dân số Việt Nam năm " + year;
+  popHeroValue.innerHTML = fmtVN(pop) + '<span class="unit">triệu người</span>';
+
+  yoyVal.textContent = t === 0 ? "—" : "+" + fmtVN(yoyIncrease(t)) + " triệu người";
+
+  setHouseCount(houses);
+  updateChart(t);
+}
+slider.addEventListener("input", updateUI);
+updateUI();
+
+/* ===================== Vòng lặp render chuẩn ===================== */
+function animate(now) {
+  requestAnimationFrame(animate);
+  syncSize(container, camera, renderer, cssRenderer);
+  updateGrowingAnimations(now);
+  controls.update();
+  renderer.render(scene, camera);
+  cssRenderer.render(scene, camera);
+}
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
