@@ -1,0 +1,2060 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đạo hàm = độ dốc tại một chỗ · Màn 1–6</title>
+<style>
+:root{
+  --bg:#0b1220; --panel:#111a2e; --panel2:#16213a; --line:#243252;
+  --text:#e8eef9; --mut:#93a4c0; --teal:#2dd4bf; --amber:#fbbf24;
+  --up:#34d399; --down:#f472b6; --flat:#94a3b8; --violet:#a78bfa;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;display:flex;flex-direction:column;-webkit-text-size-adjust:100%;overflow-x:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+header#top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);padding:8px 12px}
+#nav{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;max-width:720px;margin:0 auto}
+.tab{white-space:nowrap;font-size:14px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--mut);font-weight:600;padding:0 6px;transition:background .2s,border-color .2s,color .2s}
+.tab[aria-current="true"]{color:var(--text);border-color:var(--teal);background:rgba(45,212,191,.12)}
+main#app{flex:1;width:100%;max-width:720px;margin:0 auto;padding:12px 16px 28px}
+footer#bar{position:sticky;bottom:0;z-index:20;background:var(--bg);border-top:1px solid var(--line);padding:10px 16px}
+.barin{max-width:720px;margin:0 auto;display:flex;gap:8px}
+.btn{min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--panel);padding:0 16px;font-weight:600;transition:background .2s,border-color .2s}
+.btn.primary{flex:1;background:var(--teal);border-color:var(--teal);color:#04201c;font-size:17px}
+.btn.ghost{color:var(--mut)}
+.btn.sm{min-height:44px;font-size:14px;padding:0 14px}
+.btn.accent{border-color:var(--teal);color:var(--teal)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:focus-visible,.tab:focus-visible,.segbtn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.pulsebtn{animation:btnpulse 1.5s ease-in-out infinite}
+@keyframes btnpulse{0%,100%{box-shadow:0 0 0 0 rgba(45,212,191,0)}50%{box-shadow:0 0 0 6px rgba(45,212,191,.35)}}
+.kick{color:var(--teal);font-size:13px;font-weight:700;letter-spacing:.04em}
+h1.title{font-size:23px;line-height:1.25;margin:2px 0 8px;letter-spacing:-.01em}
+h2.sec{font-size:15px;margin:16px 0 6px;color:var(--teal)}
+.lead{font-size:18px;font-weight:500;line-height:1.45;margin:0 0 12px}
+.lead strong{color:var(--amber);font-weight:700}
+.note{color:var(--mut);font-size:13px;margin:6px 0 0}
+.readhint{color:var(--amber);font-size:14px;font-weight:600;margin:4px 0 10px}
+.note strong{color:var(--text)}
+.dat{color:var(--mut);font-size:13px;font-variant-numeric:tabular-nums}
+.frame{position:relative;border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}
+svg{display:block}
+.cv{width:100%;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.cv.tap{cursor:pointer}
+.cv:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+svg text{fill:var(--text);font-size:12px;font-family:inherit;paint-order:stroke;stroke:var(--panel);stroke-width:3px;stroke-linejoin:round}
+svg text.ax{fill:var(--mut);font-size:11px}
+svg text.vio{fill:var(--violet)}
+.row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.row.between{justify-content:space-between}
+.s1cap{margin:10px 0 0;min-height:48px;font-size:15px;font-weight:600;line-height:1.45}
+.conclusion{border-left:3px solid var(--teal);background:rgba(45,212,191,.1);padding:12px 14px;border-radius:0 10px 10px 0;margin-top:14px;font-size:17px;line-height:1.5}
+.conclusion strong{color:var(--teal)}
+.bridge{margin:12px 0 0;font-size:17px;font-weight:600;line-height:1.45}
+.card{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:12px;margin-top:12px}
+.card h3{margin:0 0 6px;font-size:15px;color:var(--teal)}
+.math{font-variant-numeric:tabular-nums;font-size:17px;line-height:1.9;overflow-wrap:anywhere}
+.math b{color:var(--amber);font-size:19px}
+.fl{margin:0 0 6px;font-variant-numeric:tabular-nums;font-size:17px;line-height:1.8;overflow-wrap:anywhere}
+.fl b{color:var(--amber);font-size:19px}
+.sA{color:var(--text);border-bottom:2px solid var(--text);padding-bottom:1px}
+.sB{color:var(--violet);border-bottom:2px solid var(--violet);padding-bottom:1px}
+.sN{color:var(--up);border-bottom:2px solid var(--up);padding-bottom:1px}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.3;text-align:center}
+.frac>span:first-child{border-bottom:1.5px solid var(--text);padding:0 5px 2px}
+.frac>span:last-child{padding:2px 5px 0}
+table.tb{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tb th{color:var(--mut);font-weight:600;font-size:12px;text-align:right;padding:4px 6px;border-bottom:1px solid var(--line)}
+.tb td{padding:6px;text-align:right;border-bottom:1px solid rgba(36,50,82,.6)}
+.tb th:first-child,.tb td:first-child{text-align:left}
+.tb tr.new td{animation:rowflash .6s ease 1}
+@keyframes rowflash{0%{background:rgba(251,191,36,.5)}100%{background:transparent}}
+.tb td.v{color:var(--violet);font-weight:700}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--mut);font-size:12px;margin:8px 0 0}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend i{width:22px;border-top:3px solid var(--teal)}
+.legend i.d{border-top:3px dashed var(--violet)}
+.caption{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:10px;min-height:92px}
+.caption p{margin:0}
+.caption .cap1{font-weight:600}
+.caption .cap2{color:var(--mut);font-size:13px;margin-top:4px}
+.caption .emph{margin-top:8px!important;color:var(--amber);font-weight:600;font-size:15px}
+.read{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:10px;min-height:82px}
+.read .r1{font-weight:700;font-variant-numeric:tabular-nums}
+.read .r2{color:var(--amber);font-weight:600;margin-top:4px;min-height:22px}
+details{margin-top:14px;font-size:14px;color:var(--mut)}
+summary{cursor:pointer;color:var(--text);padding:8px 0;min-height:44px}
+details p{margin:8px 0 4px}
+.fade{animation:fin .4s ease both}
+@keyframes fin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.seg{display:flex;gap:6px}
+.segbtn{flex:1;min-height:46px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-weight:600;font-size:15px}
+.segbtn[aria-pressed="true"]{border-color:var(--teal);background:rgba(45,212,191,.14);color:var(--teal)}
+.lab{display:block;font-size:14px;font-weight:600;margin:12px 0 6px}
+input[type=range]{width:100%;height:36px;accent-color:var(--teal);margin:0}
+.stops{display:flex;justify-content:space-between;color:var(--mut);font-size:13px;padding:0 6px}
+.lim{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 6px;line-height:1.1}
+.limwrap{display:inline-flex;align-items:center;white-space:nowrap}
+.lim small{font-size:12px;color:var(--mut)}
+.defbox{border:1.5px solid var(--teal);border-radius:12px;background:rgba(45,212,191,.08);padding:12px 14px;margin-top:10px;font-size:19px;line-height:2;overflow-wrap:anywhere}
+.cx{text-decoration:line-through;text-decoration-color:var(--amber);text-decoration-thickness:2px}
+.hl{color:var(--amber);font-weight:700}
+.t2{margin:14px 0 8px;font-size:17px;line-height:1.5}
+.q{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:12px;margin-top:12px}
+.q p.qt{margin:0 0 8px;font-weight:600;font-size:16px;line-height:1.45}
+.opt{display:block;width:100%;text-align:left;min-height:46px;margin-top:6px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);font-size:15px;line-height:1.4}
+.opt[data-s="bad"]{border-color:var(--down);background:rgba(244,114,182,.12)}
+.opt[data-s="ok"]{border-color:var(--up);background:rgba(52,211,153,.14)}
+.qf{margin:8px 0 0;font-size:14px;color:var(--mut);min-height:20px}
+.qf.ok{color:var(--up)}
+.qf.bad{color:var(--down)}
+.intro{margin:0 0 4px}
+.intro p{margin:0 0 10px;font-size:17px;line-height:1.5;opacity:0;transform:translateY(4px);transition:opacity .8s ease,transform .8s ease}
+.intro p.on{opacity:1;transform:none}
+.intro.past p.on{color:var(--mut);font-size:15px}
+.intro p strong{color:var(--amber)}
+#s3-body{opacity:0;scroll-margin-top:124px}
+.stk{position:sticky;top:61px;z-index:9;background:var(--bg);padding:6px 0}
+.caption.sb{position:sticky;bottom:76px;z-index:9;box-shadow:0 -6px 12px var(--bg)}
+.hint{position:absolute;inset:0;pointer-events:none;z-index:3}
+.hint .ring{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;border:2px solid var(--amber);box-shadow:0 0 10px rgba(251,191,36,.5);animation:pulse 1.3s ease-out infinite}
+.hint .lab{position:absolute;display:block;margin:0;transform:translate(-50%,-100%);background:var(--amber);color:#1a1300;font-weight:700;font-size:13px;padding:2px 10px;border-radius:999px;white-space:nowrap}
+@keyframes pulse{0%{transform:scale(.7);opacity:1}100%{transform:scale(1.7);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:640px){ .tab .tl{display:none} .tab{font-size:15px} }
+@media (max-width:420px){
+  .tab{font-size:15px;padding:0 2px}
+  header#top{padding:8px}
+  main#app{padding:10px 12px 24px}
+  footer#bar{padding:8px 12px}
+  .btn.primary{font-size:16px}
+  h1.title{font-size:21px}
+  .lead{font-size:17px}
+  .tb{font-size:14px}
+  .tb th{font-size:11px;padding:4px 3px}
+  .tb td{padding:6px 3px}
+  .math,.fl{font-size:16px}
+  .intro p{font-size:16px}
+}
+</style>
+</head>
+<body>
+<header id="top"><nav id="nav" aria-label="Chọn màn học"></nav></header>
+<main id="app"></main>
+<footer id="bar"><div class="barin"><button type="button" class="btn ghost" id="back">← Quay lại</button><button type="button" class="btn primary" id="next">Tiếp →</button></div></footer>
+
+<script>
+/* ===== Log tối thiểu: không ghi tên, không dùng storage ===== */
+const EVENTS = [];
+function log(type, detail){ EVENTS.push(Object.assign({ t: Math.round(performance.now()), type: type }, detail || {})); }
+</script>
+<script>
+/* ======================================================================================
+   TOÀN BỘ LỜI HIỂN THỊ CHO HỌC SINH NẰM Ở ĐÂY — muốn đổi wording thì chỉ sửa trong khối này.
+
+   CÁCH SỬA (không cần biết lập trình):
+   1. Mỗi dòng có dạng   tên_khoá: `nội dung`,   Chỉ sửa phần NỘI DUNG nằm giữa hai dấu huyền ` `.
+   2. Giữ nguyên mọi thứ trong dấu { }, ví dụ {n}, {h}, {a}. Đó là chỗ chương trình tự điền số.
+      Bạn có thể đổi VỊ TRÍ của {n} trong câu, nhưng không xoá hay đổi tên nó.
+   3. Không gõ dấu huyền ` (backtick) hay chuỗi ${ trong nội dung. Dấu ' và " thì gõ thoải mái.
+   4. Một số dòng có thẻ HTML như <strong>…</strong> (in đậm, màu nhấn) hoặc <b>…</b>. Giữ cặp thẻ đủ đôi.
+   5. Dòng nào bắt đầu bằng // là ghi chú, không hiện lên màn hình.
+   6. Lưu file, mở lại (hoặc F5) trong trình duyệt để xem kết quả.
+   ====================================================================================== */
+const T = {
+
+  /* ---------- Tên các tab ---------- */
+  tab1: `1 · Cảm nhận`,
+  tab2: `2 · Đường thẳng`,
+  tab3: `3 · Núi cong`,
+  tab4: `4 · Đạo hàm`,
+  tab5: `5 · Tính với x²`,
+  tab6: `6 · Chốt`,
+  kick: `MÀN {n} / {N}`,
+
+  /* ---------- MÀN 1 ---------- */
+  s1_title: `Chỗ nào leo mệt nhất?`,
+  s1_lead: `Càng dốc càng mệt. Theo bạn, chỗ nào trên ngọn núi này leo lên mệt nhất? Chạm vào núi: đường kẻ cho thấy mặt núi nghiêng thế nào tại chỗ bạn chọn.`,
+  s1_hint: `👆 Chạm vào núi`,
+  s1_note: `<strong>Quy ước: 1 bước = 1 m.</strong> Trục dọc được phóng đại {k} lần để dễ nhìn; mọi hình trong bài dùng cùng tỉ lệ này.`,
+  s1_axis: `vị trí (m)`,
+  // nhãn trên hình
+  s1_lab_steep: `dốc nhất`,
+  s1_lab_cur: `bạn chọn`,
+  s1_lab_both: `bạn chọn · dốc nhất`,
+  // lời dẫn: chỉ hiện SAU KHI chuyển động kết thúc (trong lúc chạy thì không có chữ), tuỳ chỗ bạn chọn
+  s1_cap_merged: `Bạn đã chọn đúng chỗ dốc nhất.`,
+  s1_cap_near: `Gần chỗ dốc nhất rồi: mặt núi ở đây nghiêng gần bằng chỗ dốc nhất.`,
+  s1_cap_flat: `Đỉnh núi: mặt núi nằm ngang. Bước tiếp theo không cao thêm.`,
+  s1_cap_down: `Bên này mặt núi nghiêng xuống: bước tiếp theo là đi xuống, không phải leo.`,
+  s1_cap_gentle: `So với chỗ dốc nhất, chỗ này thoải hơn: mỗi bước đi tiếp cao thêm ít hơn.`,
+  // hiện ra sau khi học sinh thử ít nhất 2 chỗ khác nhau
+  s1_conclusion: `Độ dốc tại một chỗ cho biết: nếu mặt núi cứ nghiêng y như chỗ bạn đang đứng, thì mỗi bước đi tiếp cao thêm (hoặc thấp đi) bao nhiêu. Lên dốc: dương. Nằm ngang: 0. Xuống dốc: âm.`,
+  s1_bridge: `Bằng mắt, ta mới chỉ cảm nhận được. Để so sánh chắc chắn, ta cần đo bằng số. Với một con đường thẳng, đo độ dốc thế nào?`,
+
+  /* ---------- MÀN 2 ---------- */
+  s2_title: `Đường thẳng: mỗi bước cao thêm như nhau`,
+  s2_lead: `Một người đi bộ từ A trên con đường thẳng. <strong>1 bước = 1 m.</strong> Hãy xem mỗi bước, người ấy cao thêm bao nhiêu.`,
+  s2_axis: `vị trí (m)`,
+  s2_hA: `độ cao tại A`,
+  s2_hB: `độ cao tại B`,
+  s2_unit_steps: `{k} bước`,
+  // dòng đọc ra dưới hình
+  s2_r_intro: `Người đi bộ đứng ở A, vạch {a} m.`,
+  s2_r_step1: `Đang đi bước thứ nhất…`,
+  s2_r_stepn: `Đang đi bước thứ {i}…`,
+  s2_r_done: `Đã đi {k} bước · cao thêm {h} m`,
+  s2_c_watch: `Hãy để ý: một bước thì cao thêm bao nhiêu?`,
+  s2_c_one: `Một bước: cao thêm 0,20 m.`,
+  s2_c_same: `Bước nào cũng cao thêm như nhau.`,
+  s2_c_gather: `Gộp lại: đi {n} bước thì cao thêm {h} m.`,
+  s2_c_split: `Chia đều {h} m cho {n} bước: mỗi bước cao thêm 0,20 m.`,
+  s2_c_single: `Đi 1 bước nên mỗi bước cao thêm đúng 0,20 m.`,
+  // nút
+  s2_b_pause: `Tạm dừng`,
+  s2_b_resume: `Tiếp tục ▶`,
+  s2_b_skip: `Bỏ qua ⏭`,
+  s2_b_step: `Bước kế ▶`,
+  s2_b_slow: `Xem chậm lại ↻`,
+  // thẻ công thức: MỘT nút, bấm là hiện công thức rồi thay số luôn
+  s2_f_title: `Từ hình đến phép tính`,
+  s2_f_btn0: `Viết thành công thức ▶`,
+  s2_f_words: `Cao thêm mỗi bước = ({B} − {A}) ÷ {N}`,       // {B}, {A}, {N} = ba ô màu: độ cao tại B / độ cao tại A / số bước đã đi
+  s2_f_slotN: `số bước đã đi từ A đến B`,
+  s2_f_nums: `= ({hb} − {ha}) ÷ {n} bước`,
+  s2_f_result: `= {d} m ÷ {n} bước = <b>{s} m mỗi bước</b>`,
+  // phần "thử ở chỗ khác"
+  s2_x_title: `Thử ở chỗ khác`,
+  s2_x_start: `Chọn vạch xuất phát`,
+  s2_x_startbtn: `Vạch {a} m`,
+  s2_x_steps: `Chọn số bước đi`,
+  s2_x_stops: `1 bước|5 bước|10 bước`,                       // ba mốc của thanh trượt, ngăn cách bằng dấu |
+  s2_x_table: `Bảng đo`,
+  s2_x_th: `A → B|đã đi|cao thêm|độ dốc`,                    // bốn tiêu đề cột, ngăn cách bằng dấu |
+  s2_x_row: `{n} bước`,
+  s2_x_slope: `{s} m mỗi bước`,
+  s2_x_prog: `Đã đo {k}/3 cách chọn khác nhau.`,
+  s2_x_prog_more: `Hãy thử thêm vài cách chọn.`,
+  s2_x_prog_spread: `Hãy đổi cả vạch xuất phát lẫn số bước.`,
+  // hiện ra khi đã đo đủ
+  s2_conclusion: `Trên đường thẳng, chọn đoạn nào cũng được: (độ cao tại B − độ cao tại A) ÷ số bước đã đi luôn ra cùng một giá trị, <strong>0,20 m mỗi bước</strong>. Đó là độ dốc của đường thẳng.`,
+  // công thức tổng quát (hiện cùng kết luận, không cần bấm nút)
+  s2_sym_text: `Gọi a, b là vị trí của A, B (tính bằng m từ vạch 0) và f(x) là độ cao tại vị trí x. Số bước đã đi từ A đến B là b − a.`,
+  s2_sym_formula: `Độ dốc = {frac}`,
+  s2_bridge: `Núi thì cong. Thử đúng phép tính này trên núi: hai điểm bất kì có luôn cho cùng một độ dốc không?`,
+
+  /* ---------- MÀN 3 ---------- */
+  s3_title: `Trên núi, nên chọn hai điểm nào?`,
+  // Ba dòng chữ hiện ngay khi vào màn (đứng yên), rồi gợi ý đọc, rồi nút
+  s3_t1: `Muốn biết độ dốc <strong>tại A</strong>, ta đi thử từ A đến một điểm B rồi đo: độ cao thay đổi bao nhiêu, đã đi bao nhiêu bước.`,
+  s3_t2: `Nếu chọn B xa A, đường ta đi qua là đường cong chứ không phải đường thẳng. Khi đó ta chưa tính được độ dốc tại A, chỉ được độ dốc trung bình của cả đoạn.`,
+  s3_t3: `Khi chọn B đủ sát với A, đường ta đi qua gần như là đường thẳng.`,
+  s3_read: `Hãy đọc kỹ ba dòng trên trước khi bấm nút.`,
+  s3_go: `Xem minh họa ▶`,
+  // nút điều khiển khi đang chạy
+  s3_b_pause: `Tạm dừng`,
+  s3_b_resume: `Tiếp tục ▶`,
+  s3_b_skip: `Bỏ qua ▸`,
+  s3_b_step: `Bước kế ▶`,
+  s3_b_replay: `Xem lại ↻`,
+  // chú thích dưới hình
+  s3_leg_mtn: `Đoạn núi A–B`,
+  s3_leg_sec: `Đường nối A–B (cát tuyến)`,
+  s3_zoom_title: `2 / CÙNG VÙNG ĐÓ, ĐƯỢC PHÓNG LỚN`,
+  s3_whole_title: `1 / TOÀN CẢNH NÚI`,
+  s3_zoom_empty: `Vùng trên núi sẽ được phóng lớn vào đây`,
+  // nhãn trong khung phóng lớn (chỉ hiện lúc hình đứng yên, không đổi số trong lúc chuyển động)
+  s3_dist: `B cách A {d} m`,
+  s3_mag: `Phóng đại × {m}`,
+  s3_mag_note: `Cùng tỉ lệ phóng theo hai chiều`,
+  // Chỉ hiện SAU KHI chạy xong cả 5 điểm. Hai dòng: dòng đậm | dòng phụ
+  s3_c_end: `B cách A chỉ 0,1 m: Đoạn núi giữa hai điểm gần như thẳng`,
+  // bảng kết quả (cũng chỉ hiện sau khi chạy xong)
+  s3_r_title: `Cùng một chỗ A, năm điểm B khác nhau`,
+  s3_r_th: `Cách nhau (m)|Ước lượng độ dốc (? mét mỗi bước)`,
+  s3_r_note1: `Ở khoảng cách 120 m, A và B cao bằng nhau nên đường nối nằm ngang: ước lượng độ dốc bằng 0, trong khi ta đang leo lên. Cùng một chỗ A mà chọn B khác nhau thì ước lượng rất khác nhau.`,
+  s3_r_note2: `Càng sát, đường núi dưới chân càng giống như một đường thẳng.`,
+  // MỘT nút: công thức + thay số cùng hiện; rồi hai nút cho "h tiến đến 0"
+  s3_f_title: `Đoạn núi gần như thẳng → dùng phép tính của đường thẳng`,
+  s3_f_btn0: `Viết thành công thức ▶`,
+  s3_f_btn1: `“Càng gần càng tốt” viết thế nào? ▶`,
+  s3_f_btn2: `Viết gọn ▶`,
+  s3_f_words: `Độ dốc ước lượng = ({B} − {A}) ÷ {N}`,
+  s3_f_nums: `= ({hb} − {ha}) ÷ {n} bước ≈ <b>{s} m mỗi bước</b>`,
+  s3_f_numnote: `Ví dụ lấy B cách A {d} m: A ở vị trí {a} m, B ở vị trí {b} m.`,
+  s3_h_def: `Gọi khoảng cách từ A đến B là <b>h</b>.`,
+  s3_h_words: `“Càng gần càng tốt” nghĩa là: <b>h tiến đến 0</b>.`,
+  s3_h_sym: `Viết gọn: <b>h → 0</b>`,
+  // kết bài
+  s3_conclusion: `<strong>Kết luận: Đưa B càng gần A, đoạn núi giữa hai điểm càng gần như thẳng.</strong> Khi ấy, ta có thể tính độ dốc bằng công thức tính độ dốc của đường thẳng, chỉ khác là h tiến đến 0.`,
+  s3_back_sum: `Sao không bước về phía sau?`,
+  s3_back_text: `Được chứ. Ở đây ta chọn phía trước để kể chuyện “bước tiếp theo”. Với ngọn núi này, tiến về A từ phía trước hay phía sau đều cho cùng độ dốc tại A.`,
+  s3_back_btn: `Xem B tiến đến A từ phía sau`,
+  s3_back_table: `Lần này B ở phía sau A`,
+  s3_bridge: `Vậy “h tiến đến 0” cần được viết thành một phép tính chặt chẽ. Ta sẽ làm việc đó ở màn tiếp theo.`,
+  /* ---------- MÀN 4: viết độ dốc thành công thức, rồi gọi tên ---------- */
+  s4_title: `Viết độ dốc thành công thức`,
+  // Phần nhắc lại (đứng yên)
+  s4_r1: `<b>Màn 1:</b> Độ dốc tại một chỗ cho biết mặt đường nghiêng thế nào ở chỗ đó.`,
+  s4_r2: `<b>Màn 2:</b> Với hai điểm A và B, ta đo độ dốc bằng: độ cao thay đổi ÷ số bước đã đi.`,
+  s4_r3: `<b>Màn 3:</b> Trên đường cong, đưa B tiến sát A để độ dốc của đường nối tiến gần độ dốc tại A.`,
+  s4_set: `Đặt A ở vị trí x₀ và B ở vị trí x₀ + h. Ở đây h là độ dời từ A đến B, nên h âm khi B ở bên trái A.`,
+  s4_f_btn: `Viết thành công thức ▶`,
+  // thẻ công thức: bấm một nút, chữ đổi sang ký hiệu ngay (giữ nguyên màu từng ô)
+  s4_f_title: `Từ chữ đến ký hiệu`,
+  s4_f_words: `Độ dốc ước lượng = ({B} − {A}) ÷ {N}`,
+  s4_f_slotN: `độ dời từ A đến B`,
+  s4_f_sym: `= ({B} − {A}) ÷ {N}`,
+  s4_f_sign: `Nếu B ở bên trái A thì h âm. Khi lên dốc, độ cao tại B thấp hơn nên hiệu số cũng âm; âm chia âm vẫn ra độ dốc dương.`,
+  // minh họa 1: hai điểm B tiến sát A từ hai phía
+  s4_t1: `Cho hai điểm B cùng tiến sát A: một điểm từ bên trái (h < 0), một điểm từ bên phải (h > 0). Hãy để ý độ dốc ước lượng của hai bên tiến về đâu.`,
+  s4_read: `Hãy đọc kỹ dòng trên trước khi bấm nút.`,
+  s4_go: `Xem minh họa ▶`,
+  s4_whole_title: `1 / TOÀN CẢNH NÚI`,
+  s4_zoom_title: `2 / CÙNG VÙNG ĐÓ, ĐƯỢC PHÓNG LỚN`,
+  s4_zoom_empty: `Vùng quanh A sẽ được phóng lớn vào đây`,
+  s4_leg_l: `Đường nối A–B₋ (bên trái)`,
+  s4_leg_r: `Đường nối A–B₊ (bên phải)`,
+  // nhãn trong khung phóng lớn (chỉ hiện lúc hình đứng yên)
+  s4_hl: `B₋ bên trái: h = {h}`,
+  s4_hr: `B₊ bên phải: h = {h}`,
+  s4_mag: `Phóng đại × {m}`,
+  // sau khi chạy xong
+  s4_r_title: `Độ dốc ước lượng ở hai phía của A`,
+  s4_r_th: `Cách A|B bên trái (h < 0)|B bên phải (h > 0)`,
+  s4_conv: `Dù B đến từ bên nào, độ dốc ước lượng cũng tiến về <strong>cùng một số</strong>. Số đó là độ dốc tại x₀.`,
+  s4_def_lead: `Ta viết:`,
+  s4_def: `Độ dốc tại x₀ = {lim}`,
+  s4_def_note: `“h → 0” nghĩa là: xét các điểm B ngày càng sát A, từ cả hai phía. Lim tính từ cả hai phía (h → 0-; h → 0+) phải cùng tiến về một số thì độ dốc tại A mới tồn tại.`,
+  s4_name: `Trong toán học, độ dốc tại x₀ này được gọi là <strong>đạo hàm</strong> của f tại x₀, viết là <strong>f′(x₀)</strong>. Dấu phẩy ′ đọc là “đạo hàm của f”: f′(x₀) đọc là “đạo hàm của f tại x₀”.`,
+  // minh họa 2: đường nối khi B tiến sát A
+  s4_t2: `Kéo dài đường nối hai điểm A-B đang nằm rất sát nhau đó, ta có gì?`,
+  s4_t_concl: `Khi B gần như trùng A, hai điểm A, B gần như thành <strong>một điểm</strong>. Đường nối khi ấy gọi là <strong>tiếp tuyến</strong> tại A. (Khi còn hai điểm rõ ràng, đường nối gọi là cát tuyến.)`,
+  s4_t_hsg: `Độ dốc của một đường thẳng chính là <strong>hệ số góc</strong> của nó (đường ở màn 2 có hệ số góc 0,20). Vậy f′(x₀) là <strong>hệ số góc của tiếp tuyến</strong> tại x₀.`,
+  s4_bridge: `Nhưng đặt h = 0 thì tử và mẫu đều bằng 0: ra 0 ÷ 0. Vậy tính f′(x₀) thế nào? Ta thử ở màn sau, với một hàm cụ thể.`,
+
+  /* ---------- MÀN 5: tự tay tính với y = x² ---------- */
+  s5_title: `Tự tay tính với y = x²`,
+  s5_f_lead: `Công thức ban đầu (màn 4):`,
+  s5_f_def: `Độ dốc tại x₀ = {lim} = f′(x₀)`,
+  s5_t1: `Đây không còn là ngọn núi, nhưng cách đo độ dốc vẫn như cũ. Ta dùng đúng công thức trên cho f(x) = x²: f(x₀ + h) = (x₀ + h)² và f(x₀) = x₀². Tính độ dốc tại x₀ = 3, với h = 1; 0,1; 0,01.`,
+  s5_b1: `Tính thử ▶`,
+  s5_th: `h|cao thêm|độ dốc ước lượng`,
+  s5_obs: `Độ dốc ước lượng: 7; 6,1; 6,01… hình như đang tiến về 6. Vì sao lại là “6 + h”?`,
+  s5_b2: `Rút gọn ▶`,
+  s5_a_title: `Rút gọn biểu thức`,
+  s5_a0: `(f(3 + h) − f(3)) ÷ h`,
+  s5_a1: `= ((3 + h)² − 3²) ÷ h`,
+  s5_a2: `= (9 + 6h + h² − 9) ÷ h`,
+  s5_a3: `= (6h + h²) ÷ h = h(6 + h) ÷ h`,
+  s5_a4: `= 6 + h`,
+  s5_a5: `Khi h → 0 thì 6 + h → 6. Vậy f′(3) = 6.`,
+  s5_key: `<strong>Rút h trước, rồi mới cho h → 0.</strong> Sau khi rút, mẫu số không còn h, nên ta không gặp 0 ÷ 0.`,
+  s5_b3: `Thay 3 bằng x₀ bất kỳ ▶`,
+  s5_g_title: `Với x₀ bất kỳ`,
+  s5_g1: `(f(x₀ + h) − f(x₀)) ÷ h = ((x₀ + h)² − x₀²) ÷ h = (2x₀h + h²) ÷ h = 2x₀ + h`,
+  s5_g2: `Khi h → 0: f′(x₀) = 2x₀. Viết gọn: <b>(x²)′ = 2x</b>`,
+  s5_gnote: `Đây là kết quả của phép đo, không phải một luật để học thuộc.`,
+  s5_t2: `Xem tiếp tuyến của y = x² tại x₀ = −2, x₀ = 0 và x₀ = 2.`,
+  s5_p_lab: `{m}`,
+  s5_p_concl: `Hệ số góc của ba tiếp tuyến: −4, 0 và 4. Xuống dốc, nằm ngang, lên dốc, giống màn 1. Đúng với f′(x₀) = 2x₀.`,
+  s5_bridge: `Ta đã đi từ cảm nhận đến công thức rồi đến phép tính. Màn cuối: chốt lại.`,
+
+  /* ---------- MÀN 6: chốt ---------- */
+  s6_title: `Chốt kiến thức`,
+  s6_lead: `Bốn câu ngắn. Chọn một đáp án để xem phản hồi; chọn sai thì chọn lại.`,
+  // mỗi câu: đề | đáp án A | B | C | D ; đáp án đúng ghi ở khóa s6_ans (chỉ số 0–3)
+  s6_q1: `f′(240) ≈ 0,147 cho biết điều gì về ngọn núi tại x = 240?`,
+  s6_q1o: `Núi cao khoảng 0,147 m tại đó.|Nếu mặt núi giữ nguyên độ nghiêng ở đó, mỗi bước đi tiếp cao thêm khoảng 0,147 m.|Đi 0,147 m thì lên cao 1 m.|Đoạn núi nào cũng cao thêm 0,147 m.`,
+  s6_q1f: `Đó là độ cao, không phải độ dốc.|Đúng: độ dốc là cao thêm trên mỗi bước.|Ngược rồi: 0,147 m là mức cao thêm trên 1 bước.|Chỉ đúng với đường thẳng, không đúng với cả đoạn núi.`,
+  s6_q2: `Công thức nào đúng cho đạo hàm của f tại x₀?`,
+  s6_q2o: `lim(h→0) [f(x₀ + h) − f(x₀)]|lim(h→0) [f(x₀) − f(x₀ + h)] ÷ h|lim(h→0) [f(x₀ + h) − f(x₀)] ÷ h|lim(h→0) [f(x₀ + h) − f(x₀)] ÷ x₀`,
+  s6_q2f: `Thiếu “÷ h”: đó mới là độ cao thay đổi, chưa quy về mỗi bước.|Ngược dấu: độ cao tại B (x₀ + h) phải đứng trước.|Đúng.|Phải chia cho độ dời h, không phải cho x₀.`,
+  s6_q3: `Độ dốc của y = x² tại x₀ = 5 là bao nhiêu?`,
+  s6_q3o: `25|5|10,1|10`,
+  s6_q3f: `25 là độ cao f(5), không phải độ dốc.|Chưa đúng: độ dốc của x² tại x₀ là 2x₀.|Đó là 2x₀ + h với h = 0,1. Còn phải cho h → 0.|Đúng: (x²)′ = 2x, tại x₀ = 5 được 10.`,
+  s6_q4: `Đường thẳng y = 3x + 5. Đạo hàm của nó tại một điểm bất kỳ bằng bao nhiêu?`,
+  s6_q4o: `3|5|3x + 5|8`,
+  s6_q4f: `Đúng: tiếp tuyến của đường thẳng chính là nó, nên đạo hàm là hệ số góc 3 ở mọi điểm.|5 là độ cao tại x = 0, không phải độ dốc.|Đó là độ cao tại x. Độ dốc là hệ số góc: 3.|8 là độ cao tại x = 1 (3·1 + 5).`,
+  // Đáp án đúng của câu 1, 2, 3, 4, đếm từ 0 (0 = đáp án đầu tiên). Nếu đổi thứ tự đáp án ở trên thì phải đổi dãy số này.
+  s6_ans: `1|2|3|0`,
+  s6_sum_title: `Điều cần nhớ`,
+  s6_sum1: `Độ dốc tại x₀ = lim(h→0) [f(x₀ + h) − f(x₀)] ÷ h. Toán học gọi nó là <strong>đạo hàm</strong>, viết f′(x₀).`,
+  s6_sum2: `f′(x₀) là <strong>hệ số góc của tiếp tuyến</strong> tại x₀: dương khi lên dốc, 0 khi nằm ngang, âm khi xuống dốc.`,
+  s6_sum3: `Muốn tính: viết độ dốc ước lượng, rút h, rồi cho h → 0. Ví dụ: (x²)′ = 2x.`
+};
+/* Điền số vào chỗ {tên}. Không cần sửa hàm này. */
+function fill(s, v){ return s.replace(/\{(\w+)\}/g, (m, k) => (v && Object.prototype.hasOwnProperty.call(v, k)) ? v[k] : m); }
+</script>
+<script>
+(function(){
+'use strict';
+
+/* ======================================================================================
+   BẢN ĐỒ CODE — chỉnh gì thì tìm ở đâu  (mọi thời gian đều tính bằng mili-giây: 1000 = 1 giây)
+
+   Cấu trúc mỗi màn (createS1 … createS6) giống nhau:
+     1) HẰNG SỐ THỜI GIAN  → ngay đầu hàm createSx, có chú thích "⏱". Muốn chạy nhanh/chậm thì sửa ở đây.
+     2) paint(t) / draw()   → các hàm VẼ: nhận thời gian t rồi vẽ lại cả hình SVG (không chứa thời gian, chỉ chứa hình).
+     3) renderXxx()         → các hàm HIỆN CHỮ / BẢNG / NÚT sau khi chạy xong (có "animationDelay" = độ trễ hiện dần từng khối).
+     4) finishRun()         → việc làm NGAY KHI motion kết thúc (hiện bảng, cuộn xuống…).
+     5) mount()             → dựng khung HTML của màn và gắn sự kiện bấm nút.
+   Muốn học sinh đỡ phải chờ ở cuối motion:  giảm số cuối của mảng HOLD (màn 3, 4) hoặc TOTAL (màn 5, màn 4 hình 2).
+   Chữ nằm trong khối const T ở trên cùng, không nằm trong các hàm này.
+   ====================================================================================== */
+
+/* ===== Hằng số dùng chung =====
+   Quy ước: 1 bước = 1 m. Quãng đường ghi bằng m; "bước" chỉ dùng cho hành động đi và cho tốc độ ("0,20 m mỗi bước"). */
+const VEXAG = 4;                // px dọc mỗi mét / px ngang mỗi mét — dùng cho MỌI hình
+const FLAT_EPS = 0.01;          // |độ dốc| nhỏ hơn mức này thì gọi là "nằm ngang"
+const NS = 'http://www.w3.org/2000/svg';
+const MINUS = '−';
+const N_SCREENS = 6;
+const kick = n => fill(T.kick, { n: n, N: N_SCREENS });
+
+/* ===== Dữ liệu: núi và độ dốc của nó ===== */
+const mh = x => 40 * Math.exp(-((x - 300) ** 2) / (2 * 120 * 120));
+const dh = x => -mh(x) * (x - 300) / (120 * 120);
+
+/* ===== Định dạng số: dấu phẩy thập phân, số nguyên không có phần thập phân ===== */
+function F(n, d, sign){
+  d = d === undefined ? 2 : d;
+  let v = Number(n);
+  if (Math.abs(v) < 0.5 * Math.pow(10, -d)) v = 0;
+  const s = Math.abs(v).toFixed(d).replace('.', ',');
+  return (v < 0 ? MINUS : (sign && v > 0 ? '+' : '')) + s;
+}
+function fmt(n, maxd){
+  maxd = maxd === undefined ? 3 : maxd;
+  let s = Math.abs(n).toFixed(maxd);
+  if (s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/\.$/, '');
+  const neg = n < 0 && Number(s) !== 0;
+  return (neg ? MINUS : '') + s.replace('.', ',');
+}
+function big(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const ease = u => u * u * (3 - 2 * u);
+const prog = (t, s, e) => e > s ? clamp((t - s) / (e - s), 0, 1) : (t >= e ? 1 : 0);
+const frac = (top, bottom) => '<span class="frac"><span>' + top + '</span><span>' + bottom + '</span></span>';
+const reduced = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const kindOf = s => Math.abs(s) < FLAT_EPS ? 'flat' : (s > 0 ? 'up' : 'down');
+
+/* ===== SVG helpers ===== */
+function node(parent, tag, attrs, text){
+  const e = document.createElementNS(NS, tag);
+  for (const k in (attrs || {})) e.setAttribute(k, attrs[k]);
+  if (text !== undefined) e.textContent = text;
+  parent.appendChild(e);
+  return e;
+}
+function line(p, x1, y1, x2, y2, color, w, extra){
+  return node(p, 'line', Object.assign({ x1: x1, y1: y1, x2: x2, y2: y2, stroke: color || 'var(--line)', 'stroke-width': w || 1 }, extra || {}));
+}
+function pathD(pts){ return pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(2) + ',' + p[1].toFixed(2)).join(' '); }
+function path(p, pts, color, w, extra){
+  return node(p, 'path', Object.assign({ d: pathD(pts), fill: 'none', stroke: color, 'stroke-width': w, 'stroke-linejoin': 'round' }, extra || {}));
+}
+function dot(p, x, y, label, color, pos){
+  node(p, 'circle', { cx: x, cy: y, r: 5.5, fill: 'var(--bg)', stroke: color, 'stroke-width': 2.6 });
+  if (label){
+    const left = pos === 'left';
+    node(p, 'text', { x: x + (left ? -10 : 9), y: y + (pos === 'below' ? 22 : -11), 'text-anchor': left ? 'end' : 'start', 'font-weight': 700 }, label);
+  }
+}
+
+/* Hoạt ảnh một lần theo p ∈ [0,1] (dùng cho màn 1). Giảm chuyển động: nhảy thẳng đến trạng thái cuối. */
+function makeAnimator(){
+  let raf = 0, id = 0;
+  return {
+    run(dur, upd, done){
+      cancelAnimationFrame(raf);
+      const my = ++id;
+      if (reduced() || dur <= 0){ upd(1); if (done) done(); return; }
+      upd(0);
+      const t0 = performance.now();
+      const tick = now => {
+        if (my !== id) return;
+        const p = Math.min(1, Math.max(0, now - t0) / dur);
+        upd(p);
+        if (p < 1) raf = requestAnimationFrame(tick); else if (done) done();
+      };
+      raf = requestAnimationFrame(tick);
+    },
+    stop(){ cancelAnimationFrame(raf); id++; }
+  };
+}
+
+/* Đồng hồ dùng chung cho màn 2 và 3: một "thời gian" t (ms), hàm vẽ thuần draw(t) vẽ đúng trạng thái tại t.
+   Có phát / tạm dừng / tua. Tua không tự gọi onEnd. */
+function makeClock(draw, onEnd){
+  let raf = 0, id = 0, t = 0, total = 0, playing = false;
+  return {
+    get t(){ return t; }, get total(){ return total; }, get playing(){ return playing; },
+    setTotal(v){ total = v; },
+    seek(v){ t = clamp(v, 0, total); draw(t); },
+    play(){
+      if (playing || t >= total) return;
+      playing = true;
+      const my = ++id; let last = performance.now();
+      const tick = now => {
+        if (my !== id) return;
+        t = Math.min(total, t + Math.max(0, Math.min(100, now - last))); last = now;   // tab nền: không nhảy vọt
+        draw(t);
+        if (t >= total){ playing = false; if (onEnd) onEnd(); } else raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    },
+    pause(){ playing = false; id++; cancelAnimationFrame(raf); },
+    stop(){ playing = false; id++; cancelAnimationFrame(raf); }
+  };
+}
+
+/* Gợi ý nhìn thấy được: vòng nhấp nháy + nhãn, chồng lên khung (HTML). */
+function renderHint(frame, points, labelText, labelAt){
+  let el = frame.querySelector('.hint');
+  if (el) el.remove();
+  el = document.createElement('div');
+  el.className = 'hint';
+  points.forEach(p => { const r = document.createElement('span'); r.className = 'ring'; r.style.left = p[0] + 'px'; r.style.top = p[1] + 'px'; el.appendChild(r); });
+  const lab = document.createElement('span');
+  lab.className = 'lab'; lab.textContent = labelText;
+  lab.style.left = clamp(labelAt[0], 60, Math.max(60, frame.clientWidth - 60)) + 'px';
+  lab.style.top = labelAt[1] + 'px';
+  el.appendChild(lab);
+  frame.appendChild(el);
+}
+function removeHint(frame){ const el = frame && frame.querySelector('.hint'); if (el) el.remove(); }
+function setText(el, s){ if (el.textContent !== s) el.textContent = s; }
+function setHTML(el, s){ if (el.dataset.h !== s){ el.dataset.h = s; el.innerHTML = s; } }
+function showBlock(el, on){
+  const was = el.hidden;
+  el.hidden = !on;
+  if (was && on) el.classList.add('fade');
+}
+
+/* ===== Trạng thái (giữ khi chuyển tab) ===== */
+const state = {
+  screen: -1,
+  s1: { touches: [], cur: null, steepShown: false, hintGone: false },
+  s2: { a: 0, n: 5, firstDone: false, stage: 0, rows: [], measured: new Set(), unlocked: false, symbols: false },
+  s3: { },
+  s4: { f: false, ran1: false, ran2: false },
+  s5: { stage: 0, ranB: false },
+  s6: { ok: [false, false, false, false], tries: [0, 0, 0, 0], pick: [-1, -1, -1, -1] }
+};
+
+/* ============================================================
+   MÀN 1 — Chỗ nào leo mệt nhất?
+   Trình tự lần chạm đầu (ms): [0–450] mảnh núi ±15 m sáng lên · [450–2050] đường thẳng dài ra đến ±100 m
+   · [2750–3450] đánh dấu chỗ dốc nhất · [3450–3750] mảnh núi · [3750–5350] đường dốc nhất dài ra.
+   ============================================================ */
+function createS1(){
+  const st = state.s1;
+  const L = 14, R = 14, PT = 8, YTOP = 48;
+  const STEEP_X = 180;            // chỗ dốc nhất (điểm uốn bên trái đỉnh)
+  const MERGE = 3;                // |x − 180| ≤ 3 m: coi là trùng chỗ dốc nhất
+  const HALF = 100, PIECE = 15;   // nửa chiều dài đường (m) và nửa chiều dài mảnh núi bám theo (m)
+  /* ⏱ THỜI GIAN MÀN 1 (ms): CUR_TOT = một lần chạm (mảnh núi hiện → đường duỗi ra);
+     FIRST_TOT = lần chạm đầu tiên (có thêm đường ở chỗ dốc nhất); STEEP_OFF = đường dốc nhất bắt đầu sau lần chạm bao lâu. */
+  const CUR_TOT = 2050, FIRST_TOT = 5350, STEEP_OFF = 2750;
+  const anim = makeAnimator();
+  let root, svg, frame, G = null, dyn = null, dragging = false, moved = false, downX = 0;
+  let mtnPts = [], axisBoxes = [], labelKey = '', labels = null, lastTc = Infinity, lastTs = null;
+  const $ = s => root.querySelector(s);
+
+  const isMerged = x => Math.abs(x - STEEP_X) <= MERGE;
+  function geom(){
+    const W = svg.clientWidth || 340;
+    const sx = (W - L - R) / 600, sy = VEXAG * sx;
+    const base = PT + YTOP * sy;
+    return { W: W, sx: sx, sy: sy, base: base, H: base + 36, X: x => L + x * sx, Y: y => base - y * sy };
+  }
+  function mtnSlice(x1, x2){
+    const a = Math.max(0, x1), b = Math.min(600, x2), pts = [];
+    for (let i = 0; i <= 24; i++){ const x = a + (b - a) * i / 24; pts.push([G.X(x), G.Y(mh(x))]); }
+    return pts;
+  }
+  function segPx(x0, half){
+    const m0 = mh(x0), d0 = dh(x0);
+    return [G.X(x0 - half), G.Y(m0 - d0 * half), G.X(x0 + half), G.Y(m0 + d0 * half)];
+  }
+
+  /* ---------- bố trí nhãn: tính một lần theo trạng thái cuối, chọn vị trí không đè gì ---------- */
+  function boxHitsPts(b, pts, pad){
+    for (let i = 0; i < pts.length; i++){
+      const p = pts[i];
+      if (p[0] >= b.x - pad && p[0] <= b.x + b.width + pad && p[1] >= b.y - pad && p[1] <= b.y + b.height + pad) return true;
+    }
+    return false;
+  }
+  function samples(seg){   // các điểm cách nhau ~3 px dọc đoạn thẳng, chỉ phần nằm trong khung vẽ
+    const out = [], len = Math.hypot(seg[2] - seg[0], seg[3] - seg[1]), n = Math.max(2, Math.ceil(len / 3));
+    const yTop = G.Y(YTOP);
+    for (let i = 0; i <= n; i++){
+      const x = seg[0] + (seg[2] - seg[0]) * i / n, y = seg[1] + (seg[3] - seg[1]) * i / n;
+      if (y >= yTop && y <= G.base) out.push([x, y]);
+    }
+    return out;
+  }
+  const overlap = (a, b, pad) => a.x < b.x + b.width + pad && b.x < a.x + a.width + pad && a.y < b.y + b.height + pad && b.y < a.y + a.height + pad;
+  function labelPlan(){
+    const key = G.W + '|' + st.cur;
+    if (labels && labelKey === key) return labels;
+    const merged = isMerged(st.cur);
+    const items = merged ? [{ id: 'cur', text: T.s1_lab_both, x0: st.cur }]
+                         : [{ id: 'steep', text: T.s1_lab_steep, x0: STEEP_X }, { id: 'cur', text: T.s1_lab_cur, x0: st.cur }];
+    const segPts = samples(segPx(st.cur, HALF)).concat(merged ? [] : samples(segPx(STEEP_X, HALF)));
+    const solid = [mtnPts, segPts];
+    const keep = [];                       // hộp đã chiếm: số trục, chấm, nhãn đã đặt
+    axisBoxes.forEach(b => keep.push(b));
+    const dots = [st.cur].concat(merged ? [] : [STEEP_X]);
+    dots.forEach(x => keep.push({ x: G.X(x) - 12, y: G.Y(mh(x)) - 12, width: 24, height: 24 }));
+    const out = {};
+    items.forEach(it => {
+      const ax = G.X(it.x0), ay = G.Y(mh(it.x0));
+      const offs = [];
+      [-12, -26, -42, -60, -80, 24, 40, 58].forEach(dy => [[14, 'start'], [-14, 'end'], [0, 'middle'], [44, 'start'], [-44, 'end'], [80, 'start'], [-80, 'end']].forEach(q => offs.push([q[0], dy, q[1]])));
+      offs.sort((u, v) => (Math.hypot(u[0], u[1]) + (u[1] > 0 ? 6 : 0)) - (Math.hypot(v[0], v[1]) + (v[1] > 0 ? 6 : 0)));
+      const t = node(svg, 'text', { style: 'font-weight:700' }, it.text);
+      const boxes = [];
+      const measure = i => {
+        if (boxes[i]) return boxes[i];
+        t.setAttribute('x', ax + offs[i][0]); t.setAttribute('y', ay + offs[i][1]); t.setAttribute('text-anchor', offs[i][2]);
+        const b = t.getBBox();
+        return (boxes[i] = { x: b.x, y: b.y, width: b.width, height: b.height });
+      };
+      const inside = b => b.x >= 3 && b.x + b.width <= G.W - 3 && b.y >= 2 && b.y + b.height <= G.base - 1;
+      const clearKeep = b => !keep.some(k => overlap(b, k, 2));
+      const clearSolid = b => !solid.some(pts => boxHitsPts(b, pts, 2));
+      let pick = -1;
+      const tests = [b => inside(b) && clearKeep(b) && clearSolid(b), b => inside(b) && clearKeep(b), b => inside(b)];
+      search: for (let k = 0; k < tests.length; k++) for (let i = 0; i < offs.length; i++) if (tests[k](measure(i))){ pick = i; break search; }
+      if (pick < 0) pick = 0;
+      const b = measure(pick);
+      keep.push(b);
+      t.remove();
+      out[it.id] = { x: ax + offs[pick][0], y: ay + offs[pick][1], anchor: offs[pick][2], text: it.text };
+    });
+    labelKey = key; labels = out;
+    return out;
+  }
+
+  /* ---------- nền tĩnh: lưới, núi, trục (chỉ vẽ lại khi đổi kích thước) ---------- */
+  function drawStatic(){
+    G = geom();
+    svg.setAttribute('viewBox', '0 0 ' + G.W + ' ' + G.H);
+    svg.style.height = G.H + 'px';
+    svg.replaceChildren();
+    const defs = node(svg, 'defs'), cp = node(defs, 'clipPath', { id: 's1-clip' });
+    node(cp, 'rect', { x: 0, y: G.Y(YTOP), width: G.W, height: G.base - G.Y(YTOP) });
+    [0, 20, 40].forEach(v => {
+      line(svg, L, G.Y(v), G.W - R, G.Y(v), 'var(--line)', 1);
+      if (v > 0) node(svg, 'text', { x: G.W - R, y: G.Y(v) - 4, 'text-anchor': 'end', class: 'ax' }, v + ' m');
+    });
+    mtnPts = [];
+    for (let x = 0; x <= 600; x += 2) mtnPts.push([G.X(x), G.Y(mh(x))]);
+    node(svg, 'path', { d: pathD(mtnPts) + ' L' + G.X(600) + ',' + G.Y(0) + ' L' + G.X(0) + ',' + G.Y(0) + ' Z', fill: 'var(--teal)', opacity: '.13' });
+    path(svg, mtnPts, 'var(--teal)', 2.6, { id: 's1-mtn-line' });
+    for (let x = 0; x <= 600; x += 100){
+      node(svg, 'text', { x: G.X(x), y: G.base + 16, 'text-anchor': x === 0 ? 'start' : (x === 600 ? 'end' : 'middle'), class: 'ax' }, String(x));
+    }
+    node(svg, 'text', { x: G.W - R, y: G.base + 32, 'text-anchor': 'end', class: 'ax' }, T.s1_axis);
+    axisBoxes = Array.from(svg.querySelectorAll('text.ax')).map(t => { const b = t.getBBox(); return { x: b.x, y: b.y, width: b.width, height: b.height }; });
+    dyn = node(svg, 'g', { id: 's1-dyn' });
+    labelKey = ''; labels = null;
+    draw(lastTc, lastTs);
+    placeHint();
+  }
+
+  /* ---------- lớp động: vẽ đúng trạng thái tại thời điểm tc (đường bạn chọn), ts (đường dốc nhất) ---------- */
+  function item(g, role, x0, tl, color){
+    const steep = role === 'steep';
+    // ⏱ pS/pL = lúc bắt đầu / thời lượng mảnh núi lớn dần; lS = lúc đường thẳng bắt đầu duỗi (thời lượng duỗi: 1600 ở dòng dưới). Đơn vị ms.
+    const pS = steep ? 700 : 0, pL = steep ? 300 : 450, lS = steep ? 1000 : 450;
+    const pp = ease(clamp((tl - pS) / pL, 0, 1));
+    if (pp > 0) path(g, mtnSlice(x0 - PIECE * pp, x0 + PIECE * pp), color, 6.5, { opacity: '.5', 'stroke-linecap': 'round', id: 's1-piece-' + role });
+    const lp = ease(clamp((tl - lS) / 1600, 0, 1));
+    if (lp > 0){
+      const half = PIECE + (HALF - PIECE) * lp, s = segPx(x0, half);
+      line(g, s[0], s[1], s[2], s[3], color, 3.4, { 'stroke-linecap': 'round', id: 's1-line-' + role });
+    }
+  }
+  function draw(tc, ts){
+    lastTc = tc; lastTs = ts;
+    if (!dyn) return;
+    dyn.replaceChildren();
+    if (st.cur === null){ setCap(''); return; }
+    const x = st.cur, merged = isMerged(x), lab = labelPlan();
+    const g = node(dyn, 'g', { 'clip-path': 'url(#s1-clip)' });
+    if (!merged && ts !== null) item(g, 'steep', STEEP_X, ts, 'var(--text)');
+    item(g, 'cur', x, tc, 'var(--amber)');
+    // chấm đánh dấu chỗ dốc nhất (xuất hiện TRƯỚC đường của nó)
+    if (ts !== null || merged){
+      const t = merged ? Infinity : ts, mx = G.X(STEEP_X), my = G.Y(mh(STEEP_X)), p = clamp(t / 700, 0, 1);
+      if (t < 700 && !reduced()) node(dyn, 'circle', { cx: mx, cy: my, r: 8 + 16 * p, fill: 'none', stroke: 'var(--text)', 'stroke-width': 2, opacity: (1 - p).toFixed(2) });
+      node(dyn, 'circle', { cx: mx, cy: my, r: 9, fill: 'none', stroke: 'var(--text)', 'stroke-width': 2.2, opacity: clamp(t / 200, 0, 1).toFixed(2), id: 's1-steep-mark' });
+    }
+    node(dyn, 'circle', { cx: G.X(x), cy: G.Y(mh(x)), r: 6, fill: 'var(--amber)', stroke: 'var(--bg)', 'stroke-width': 2, id: 's1-person' });
+    // nhãn
+    if (!merged && ts !== null){
+      const l = lab.steep;
+      node(dyn, 'text', { x: l.x, y: l.y, 'text-anchor': l.anchor, style: 'font-weight:700', opacity: clamp(ts / 300, 0, 1).toFixed(2), id: 's1-lab-steep' }, l.text);
+    }
+    if (tc >= 450){
+      const l = lab.cur;
+      node(dyn, 'text', { x: l.x, y: l.y, 'text-anchor': l.anchor, style: 'fill:var(--amber);font-weight:700', opacity: clamp((tc - 450) / 300, 0, 1).toFixed(2), id: 's1-lab-cur' }, l.text);
+    }
+    setCap(capFor(tc, ts));
+  }
+
+  /* ---------- lời dẫn ---------- */
+  function captionFinal(x){
+    if (isMerged(x)) return T.s1_cap_merged;
+    if (Math.abs(x - STEEP_X) <= 30) return T.s1_cap_near;
+    const k = kindOf(dh(x));
+    if (k === 'flat') return T.s1_cap_flat;
+    if (k === 'down') return T.s1_cap_down;
+    return T.s1_cap_gentle;
+  }
+  /* Quy tắc: đang chuyển động (tc còn hữu hạn) thì KHÔNG có chữ; chữ chỉ hiện khi hình đã đứng yên. */
+  function capFor(tc, ts){
+    if (isFinite(tc)) return '';
+    return captionFinal(st.cur);
+  }
+  function setCap(s){ const c = $('#s1-cap'); if (c) setText(c, s); }
+  function distinctCount(){
+    const u = [];
+    st.touches.forEach(t => { if (!u.some(v => Math.abs(v - t) < 15)) u.push(t); });
+    return u.length;
+  }
+  function refreshEnd(){ showBlock($('#s1-end'), distinctCount() >= 2); }
+  function placeHint(){
+    if (st.hintGone || !G) return removeHint(frame);
+    const x = 110, px = G.X(x), py = G.Y(mh(x));
+    renderHint(frame, [[px, py]], T.s1_hint, [px, Math.min(py - 20, G.Y(30))]);
+  }
+  function firstInteraction(){ if (!st.hintGone){ st.hintGone = true; removeHint(frame); } }
+
+  function choose(x, o){
+    x = clamp(Math.round(x), 0, 600);
+    firstInteraction();
+    if (o.down){ st.touches.push(x); log('s1_tap', { x: x }); }
+    st.cur = x;
+    const first = !st.steepShown, merged = isMerged(x);
+    st.steepShown = true;
+    if (o.animate){
+      const end = () => { draw(Infinity, Infinity); refreshEnd(); };     // hình đứng yên: bây giờ mới hiện chữ
+      if (first && !merged) anim.run(FIRST_TOT, p => { const t = p * FIRST_TOT; draw(t, t < STEEP_OFF ? null : t - STEEP_OFF); }, end);
+      else anim.run(CUR_TOT, p => { const t = p * CUR_TOT; draw(t, Infinity); }, end);
+    } else { anim.stop(); draw(Infinity, Infinity); refreshEnd(); }
+  }
+  function xFromEvent(e){
+    const r = svg.getBoundingClientRect();
+    return (e.clientX - r.left - L) / (r.width - L - R) * 600;
+  }
+  function mount(r){
+    root = r;
+    root.innerHTML =
+      '<div class="kick">' + kick(1) + '</div>' +
+      '<h1 class="title">' + T.s1_title + '</h1>' +
+      '<p class="lead">' + T.s1_lead + '</p>' +
+      '<div class="frame" id="s1-frame"><svg id="s1-mtn" class="cv tap" tabindex="0" role="img" aria-label="Ngọn núi. Chạm hoặc kéo để chọn vị trí; dùng phím mũi tên để dịch chuyển."></svg></div>' +
+      '<p class="note">' + fill(T.s1_note, { k: fmt(VEXAG, 0) }) + '</p>' +
+      '<p class="s1cap" id="s1-cap" aria-live="polite"></p>' +
+      '<div id="s1-end" hidden>' +
+        '<div class="conclusion">' + T.s1_conclusion + '</div>' +
+        '<p class="bridge">' + T.s1_bridge + '</p>' +
+      '</div>';
+    svg = $('#s1-mtn'); frame = $('#s1-frame');
+    svg.addEventListener('pointerdown', e => {
+      dragging = true; moved = false; downX = e.clientX;
+      try { svg.setPointerCapture(e.pointerId); } catch (err) {}
+      choose(xFromEvent(e), { down: true, animate: true });
+    });
+    svg.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      if (!moved && Math.abs(e.clientX - downX) < 4) return;   // rung nhẹ của ngón tay không tính là kéo
+      moved = true;
+      choose(xFromEvent(e), {});
+    });
+    const up = () => {
+      if (!dragging) return;
+      dragging = false;
+      if (moved){ if (st.touches.length) st.touches[st.touches.length - 1] = st.cur; refreshEnd(); }
+    };
+    svg.addEventListener('pointerup', up);
+    svg.addEventListener('pointercancel', up);
+    svg.addEventListener('keydown', e => {
+      const step = e.shiftKey ? 1 : 10;
+      let nx = null;
+      if (e.key === 'ArrowLeft') nx = (st.cur === null ? 70 : st.cur) - step;
+      else if (e.key === 'ArrowRight') nx = (st.cur === null ? 70 : st.cur) + step;
+      if (nx !== null){ e.preventDefault(); choose(nx, { down: true, animate: true }); }
+    });
+    lastTc = Infinity; lastTs = st.steepShown ? Infinity : null;
+    drawStatic();
+    refreshEnd();
+  }
+  return {
+    tab: T.tab1, hasNext: true,
+    mount: mount,
+    unmount(){ anim.stop(); dragging = false; },
+    redraw(){ if (!root) return; anim.stop(); lastTc = Infinity; lastTs = st.steepShown ? Infinity : null; drawStatic(); }
+  };
+}
+
+/* ============================================================
+   MÀN 2 — Đường thẳng: mỗi bước cao thêm như nhau
+   Người que đi từ A; thời gian t (ms) điều khiển mọi thứ qua paint(t).
+   ============================================================ */
+function createS2(){
+  const st = state.s2;
+  const L0 = 46, Rm = 16, PT = 16;
+  const STARTS = [0, 5, 10], STEPS = [1, 5, 10];
+  const f = x => x / 5;                 // đường thẳng: độ dốc 0,20 (tính bằng số nguyên để khỏi sai số)
+  let root, svg, frame, G = null, plan = null, clock = null, slow = true;
+  const $ = s => root.querySelector(s);
+
+  /* ⏱ KẾ HOẠCH THỜI GIAN MÀN 2 (ms). slow = lần chạy đầu / "xem chậm lại".
+     mv = thời gian đi 1 bước; hold = dừng sau mỗi bước; gS/gE = hiện "cao thêm"; sS/sE = hiện "chia đều"; total = kết thúc.
+     Số cộng thêm vào total (300) là thời gian đứng yên ở cuối trước khi hiện kết quả. */
+  function makePlan(n, isSlow){
+    const P = { n: n, slow: isSlow, steps: [] };
+    let t;
+    if (isSlow){
+      t = 1500;
+      for (let i = 0; i < n; i++){
+        const mv = i === 0 ? 2200 : 1100, hold = i === 0 ? 1500 : 350;
+        P.steps.push({ s: t, e: t + mv }); t += mv + hold;
+      }
+      P.walkEnd = t;
+      if (n > 1){ P.gS = t + 400; P.gE = P.gS + 1200; P.sS = P.gE + 1000; P.sE = P.sS + 1200; P.total = P.sE + 300; }
+      else { P.gS = P.gE = P.sS = P.sE = t; P.total = t + 900; }
+    } else {
+      t = 300;
+      const mv = n <= 5 ? 700 : 450;
+      for (let i = 0; i < n; i++){ P.steps.push({ s: t, e: t + mv }); t += mv + 150; }
+      P.walkEnd = t;
+      if (n > 1){ P.gS = t + 200; P.gE = P.gS + 600; P.sS = P.gE + 300; P.sE = P.sS + 600; P.total = P.sE + 300; }
+      else { P.gS = P.gE = P.sS = P.sE = t; P.total = t + 500; }
+    }
+    P.intro = P.steps[0].s;
+    return P;
+  }
+
+  /* Khung nhìn bám theo lần chạy: rộng 8 m (đi 1 hoặc 5 bước) hoặc 14 m (10 bước), bắt đầu từ 1 m trước A.
+     Chiều cao khung = chiều rộng × 0,2 × VEXAG, nên tỉ lệ dọc/ngang vẫn đúng VEXAG như mọi hình khác. */
+  function geom(){
+    const W = svg.clientWidth || 340;
+    const span = st.n <= 5 ? 8 : 14, x0 = st.a - 1, y0 = f(x0);
+    const avail = W - L0 - Rm;
+    const sxs = Math.min(avail / span, 300 / (0.2 * VEXAG * span));   // px ngang mỗi mét (khung cao ≤ 300 px)
+    const ox = L0 + (avail - span * sxs) / 2;
+    const pxm = VEXAG * sxs, plotH = span * 0.2 * pxm, base = PT + plotH;
+    return { W: W, span: span, x0: x0, y0: y0, sxs: sxs, pxm: pxm, plotH: plotH, base: base, H: base + 78, ox: ox,
+             X: x => ox + (x - x0) * sxs, Y: y => base - (y - y0) * pxm };
+  }
+
+  /* người que: chân đặt tại (x, y); h = chiều cao; ph = pha bước chân (chỉ đung đưa nhẹ, không nhấc chân) */
+  function walker(parent, x, y, h, ph){
+    const g = node(parent, 'g', { id: 's2-walker', stroke: 'var(--text)', 'stroke-width': 2.2, fill: 'none', 'stroke-linecap': 'round' });
+    const sw = Math.sin(ph * Math.PI * 2) * h * 0.12;
+    node(g, 'circle', { cx: x, cy: y - h * 0.86, r: h * 0.13, fill: 'var(--bg)' });
+    line(g, x, y - h * 0.73, x, y - h * 0.36, 'var(--text)', 2.2);
+    line(g, x, y - h * 0.36, x - h * 0.1 - sw, y, 'var(--text)', 2.2);
+    line(g, x, y - h * 0.36, x + h * 0.1 + sw, y, 'var(--text)', 2.2);
+    line(g, x, y - h * 0.63, x - h * 0.17 + sw * 0.8, y - h * 0.42, 'var(--text)', 2.2);
+    line(g, x, y - h * 0.63, x + h * 0.17 - sw * 0.8, y - h * 0.42, 'var(--text)', 2.2);
+    return g;
+  }
+
+  function paint(t){
+    if (!svg || !plan) return;
+    G = geom();
+    svg.setAttribute('viewBox', '0 0 ' + G.W + ' ' + G.H);
+    svg.style.height = G.H + 'px';
+    svg.replaceChildren();
+    const a = st.a, n = st.n, b = a + n, P = plan, X = G.X, Y = G.Y;
+    // tiến độ
+    let k = 0, cur = -1, q = 0;
+    P.steps.forEach((s, i) => {
+      if (t >= s.e) k = i + 1;
+      else if (t >= s.s && cur < 0){ cur = i; q = ease((t - s.s) / (s.e - s.s)); }
+    });
+    const gth = ease(prog(t, P.gS, P.gE)), spl = prog(t, P.sS, P.sE);
+    const wx = cur >= 0 ? a + cur + q : a + k;
+    // lưới + trục (cứ 0,2 m một vạch: một bước = một khoảng lưới)
+    const xL = G.x0, xR = G.x0 + G.span, labEvery = G.pxm * 0.2 >= 20 ? 1 : 2;
+    for (let i = Math.ceil(G.y0 * 5 - 1e-9); i <= Math.floor(f(xR) * 5 + 1e-9); i++){
+      const y = i / 5;
+      line(svg, X(xL), Y(y), X(xR), Y(y), 'var(--line)', 1);
+      if (i >= 0 && i % labEvery === 0) node(svg, 'text', { x: X(xL) - 6, y: Y(y) + 4, 'text-anchor': 'end', class: 'ax' }, F(y, 1) + ' m');
+    }
+    const xe = G.span === 8 ? 1 : 2;
+    for (let x = Math.ceil(xL); x <= xR; x++) if (x >= 0 && x % xe === 0) node(svg, 'text', { x: X(x), y: G.base + 16, 'text-anchor': 'middle', class: 'ax' }, String(x));
+    node(svg, 'text', { x: G.W - 8, y: G.base + 72, 'text-anchor': 'end', class: 'ax' }, T.s2_axis);
+    // đường thẳng
+    const lx0 = Math.max(0, xL);
+    line(svg, X(lx0), Y(f(lx0)), X(xR), Y(f(xR)), 'var(--teal)', 3, { 'stroke-linecap': 'round', id: 's2-line' });
+    // vạch hướng dẫn công thức (độ cao tại A, tại B)
+    if (st.stage >= 1 && t >= P.walkEnd){
+      line(svg, X(xL), Y(f(a)), X(a), Y(f(a)), 'var(--violet)', 1.4, { 'stroke-dasharray': '2 4' });
+      line(svg, X(xL), Y(f(b)), X(b), Y(f(b)), 'var(--violet)', 1.4, { 'stroke-dasharray': '2 4' });
+      node(svg, 'text', { x: X(xL) + 6, y: Y(f(b)) - 5, class: 'vio', style: 'font-weight:700;font-size:11px' }, T.s2_hB);
+      if (n > 0 && f(a) !== f(b)) node(svg, 'text', { x: X(xL) + 6, y: Y(f(a)) + 15, style: 'font-weight:700;font-size:11px' }, T.s2_hA);
+    }
+    // phần cao thêm của từng bước: bậc ngang (đệm) + thanh dọc (cao thêm)
+    const slice = 0.2 * G.pxm, gap = 3 * spl;
+    for (let i = 0; i < n; i++){
+      const done = i < k, doing = i === cur;
+      if (!done && !doing) continue;
+      const xi = a + i, yBot = Y(f(xi));
+      if (doing){
+        const wxp = X(xi + q);
+        line(svg, X(xi), yBot, wxp, yBot, 'var(--mut)', 1.2, { 'stroke-dasharray': '3 3' });
+        node(svg, 'rect', { x: wxp - 4.5, y: yBot - q * slice, width: 9, height: Math.max(0.6, q * slice), fill: 'var(--up)', class: 'slice' });
+      } else {
+        if (gth < 1) line(svg, X(xi), yBot, X(xi + 1), yBot, 'var(--mut)', 1.2, { 'stroke-dasharray': '3 3', opacity: (1 - gth).toFixed(2) });
+        const cx = X(xi + 1) + (X(b) - X(xi + 1)) * gth;
+        const hh = Math.max(0.6, slice - (spl > 0 ? gap : 0));
+        node(svg, 'rect', { x: cx - 4.5, y: yBot - slice + (spl > 0 ? gap / 2 : 0), width: 9, height: hh, fill: 'var(--up)', class: 'slice' });
+        if (i === 0 && P.slow && gth === 0 && (n === 1 || t < P.steps[1].s + 300))
+          node(svg, 'text', { x: cx + 10, y: yBot - slice / 2 + 4, style: 'fill:var(--up);font-weight:700' }, '0,20 m');
+      }
+    }
+    if (cur === 0 && P.slow && q > 0.7)
+      node(svg, 'text', { x: X(a + q) + 10, y: Y(f(a)) - q * slice / 2 + 4, style: 'fill:var(--up);font-weight:700' }, '0,20 m');
+    // nhịp đo ngang dưới trục: số bước đã đi
+    const kk = t >= P.gS && n > 0 ? n : k;
+    if (kk > 0){
+      const yb = G.base + 32;
+      line(svg, X(a), yb, X(a + kk), yb, 'var(--violet)', 1.6);
+      line(svg, X(a), yb - 4, X(a), yb + 4, 'var(--violet)', 1.6);
+      line(svg, X(a + kk), yb - 4, X(a + kk), yb + 4, 'var(--violet)', 1.6);
+      node(svg, 'text', { x: (X(a) + X(a + kk)) / 2, y: yb + 16, 'text-anchor': 'middle', class: 'vio' }, fill(T.s2_unit_steps, { k: kk }));
+    }
+    // gộp / chia đều
+    const barX = X(b) + 4.5;
+    if (gth > 0 && n > 1){
+      line(svg, X(a), Y(f(a)), X(b), Y(f(a)), 'var(--violet)', 1.4, { 'stroke-dasharray': '5 4', opacity: gth.toFixed(2) });
+      if (gth >= 1 && spl < 0.34) node(svg, 'text', { x: barX + 8, y: Y((f(a) + f(b)) / 2) + 4, opacity: clamp(1 - spl * 3, 0, 1).toFixed(2), style: 'fill:var(--up);font-weight:700' }, F(n * 0.2, 2) + ' m');
+      if (spl > 0){
+        if (n <= 6){
+          const spacing = Math.max(12, slice), yTop = Y(f(b)) + Math.max(slice / 2, 9);
+          for (let i = 0; i < n; i++){
+            const yc = Y(f(a) + 0.2 * (n - i - 0.5)), ly = yTop + i * spacing;
+            line(svg, barX, yc, barX + 12, ly - 3, 'var(--mut)', 1, { opacity: (spl * 0.8).toFixed(2) });
+            node(svg, 'text', { x: barX + 14, y: ly, opacity: spl.toFixed(2), style: 'fill:var(--up);font-weight:700;font-size:10.5px', class: 'slicelabel' }, '0,20 m');
+          }
+        } else {
+          const yc = Y(f(a) + 0.2 * (n - 0.5));
+          line(svg, barX, yc, barX + 12, yc + 10, 'var(--mut)', 1, { opacity: (spl * 0.8).toFixed(2) });
+          const tx = node(svg, 'text', { x: barX + 14, y: yc + 12, opacity: spl.toFixed(2), style: 'fill:var(--up);font-weight:700;font-size:10.5px', class: 'slicelabel' });
+          node(tx, 'tspan', { x: barX + 14, dy: 0 }, 'mỗi lát');
+          node(tx, 'tspan', { x: barX + 14, dy: 12 }, '0,20 m');
+        }
+      }
+    }
+    // A, B, người que
+    dot(svg, X(a), Y(f(a)), 'A', 'var(--text)', 'left');
+    if (k === n && n > 0) dot(svg, X(b), Y(f(b)), 'B', 'var(--violet)', 'left');
+    const hf = clamp(1.6 * G.sxs, 24, 48);
+    const moving = cur >= 0;
+    walker(svg, X(wx), Y(f(wx)) - 1, hf, moving ? (t - P.steps[cur].s) / 550 : 0);
+    // chữ đọc ra
+    readout(t, k, cur, gth, spl);
+    syncButtons();
+  }
+
+  function readout(t, k, cur, gth, spl){
+    const P = plan, n = st.n;
+    let r1, r2 = '';
+    if (t < P.intro){ r1 = fill(T.s2_r_intro, { a: st.a }); }
+    else if (cur >= 0 && k === 0){ r1 = T.s2_r_step1; if (P.slow) r2 = T.s2_c_watch; }
+    else if (cur >= 0){ r1 = fill(T.s2_r_stepn, { i: cur + 1 }); r2 = T.s2_c_same; }
+    else {
+      r1 = fill(T.s2_r_done, { k: k, h: F(0.2 * k, 2) });
+      const firstGap = n > 1 ? t < P.steps[1].s : t < P.gS;
+      if (k >= 1 && firstGap) r2 = T.s2_c_one;
+      else if (t < P.gS) r2 = T.s2_c_same;
+      if (n > 1 && t >= P.gS && t < P.sS) r2 = fill(T.s2_c_gather, { n: n, h: F(0.2 * n, 2) });
+      if (n > 1 && t >= P.sS) r2 = fill(T.s2_c_split, { n: n, h: F(0.2 * n, 2) });
+      if (n === 1 && t >= P.gS) r2 = T.s2_c_single;
+    }
+    setText($('#s2-r1'), r1); setText($('#s2-r2'), r2);
+  }
+
+  /* ---------- nút phát ---------- */
+  function boundaries(){
+    const P = plan, bs = [P.steps[0].s];
+    P.steps.forEach(s => bs.push(s.e));
+    if (st.n > 1){ bs.push(P.gE); bs.push(P.sE); }
+    bs.push(P.total);
+    return bs;
+  }
+  function runDone(){ return clock.t >= clock.total; }
+  function syncButtons(){
+    if (!root || !clock) return;
+    const done = runDone(), rm = reduced();
+    $('#s2-pp').hidden = done || rm;
+    $('#s2-skip').hidden = done || rm;
+    $('#s2-stepbtn').hidden = done || !rm;
+    $('#s2-slow').hidden = !done;
+    $('#s2-pp').textContent = clock.playing ? T.s2_b_pause : T.s2_b_resume;
+    $('#s2-stepbtn').classList.toggle('pulsebtn', !done && rm);
+  }
+  function finishRun(){
+    const wasFirst = !st.firstDone;
+    if (wasFirst){ st.firstDone = true; showFormula(); }
+    else if (st.stage >= 1) measure();
+    paint(clock.t);
+  }
+  function startRun(a, n, isSlow){
+    clock.stop();
+    st.a = a; st.n = n;
+    plan = makePlan(n, isSlow);
+    clock.setTotal(plan.total);
+    renderFormula();
+    clock.seek(0);
+    $('#s2-ctl-a').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.a === a)));
+    $('#s2-nr').value = String(STEPS.indexOf(n));
+    if (reduced()){
+      if (st.firstDone || !isSlow){ clock.seek(plan.total); finishRun(); }
+      else syncButtons();
+    } else clock.play();
+    syncButtons();
+  }
+
+  /* ---------- công thức: MỘT nút; bấm là hiện công thức rồi thay số luôn ---------- */
+  function showFormula(){ $('#s2-fwrap').hidden = false; renderFormula(); }
+  function renderFormula(){
+    if (!root) return;
+    const a = st.a, n = st.n, b = a + n, s = st.stage;
+    $('#s2-fwrap').hidden = !st.firstDone;
+    const sl = { A: '<span class="sA">' + T.s2_hA + '</span>', B: '<span class="sB">' + T.s2_hB + '</span>', N: '<span class="sN">' + T.s2_f_slotN + '</span>' };
+    const rows = [
+      fill(T.s2_f_words, sl),
+      fill(T.s2_f_nums, { hb: '<span class="sB">' + F(f(b), 2) + ' m</span>', ha: '<span class="sA">' + F(f(a), 2) + ' m</span>', n: '<span class="sN">' + n + '</span>' }),
+      fill(T.s2_f_result, { d: F(f(b) - f(a), 2), n: n, s: F((f(b) - f(a)) / n, 2) })
+    ];
+    for (let i = 0; i < 3; i++){
+      const el = $('#s2-f' + i);
+      el.innerHTML = rows[i];
+      const was = el.hidden;
+      el.hidden = s < 1;
+      if (was && !el.hidden){ el.classList.add('fade'); el.style.animationDelay = (i * 0.5) + 's'; }   // công thức hiện trước, số thay vào ngay sau
+    }
+    const btn = $('#s2-fnext');
+    btn.hidden = s >= 1;
+    if (s < 1){ btn.textContent = T.s2_f_btn0; btn.classList.add('pulsebtn'); }
+  }
+  function nextStage(){
+    if (st.stage >= 1) return;
+    st.stage = 1;
+    measure();                                                 // phép tính đầu tiên đã hoàn tất: tính vào bảng đo
+    $('#s2-ctl').hidden = false; $('#s2-ctl').classList.add('fade');
+    renderFormula();
+    updateProgress();
+    paint(clock.t);
+  }
+
+  /* ---------- bảng đo + mở khoá ---------- */
+  function renderRows(){
+    const tb = $('#s2-tb tbody');
+    tb.innerHTML = '';
+    st.rows.slice().reverse().forEach((r, idx) => {
+      const tr = document.createElement('tr');
+      if (idx === 0 && r.fresh){ tr.className = 'new'; r.fresh = false; }
+      const d = f(r.a + r.n) - f(r.a);
+      tr.innerHTML = '<td>' + r.a + ' → ' + (r.a + r.n) + '</td><td>' + fill(T.s2_x_row, { n: r.n }) + '</td><td>' + F(d, 2) + ' m</td><td class="v">' + fill(T.s2_x_slope, { s: F(d / r.n, 2) }) + '</td>';
+      tb.appendChild(tr);
+    });
+    $('#s2-tbwrap').hidden = st.rows.length === 0;
+  }
+  function pairs(){ return Array.from(st.measured).map(k => k.split('-').map(Number)); }
+  function updateProgress(){
+    const ps = pairs();
+    const okSpread = new Set(ps.map(p => p[1])).size >= 2 && new Set(ps.map(p => p[0])).size >= 2;
+    if (!st.unlocked && ps.length >= 3 && okSpread){ st.unlocked = true; log('s2_unlock'); }
+    const p = $('#s2-prog');
+    p.hidden = st.unlocked || st.stage < 1;
+    let msg = fill(T.s2_x_prog, { k: Math.min(3, ps.length) });
+    if (ps.length >= 3 && !okSpread) msg += ' ' + T.s2_x_prog_spread;
+    else if (ps.length < 3) msg += ' ' + T.s2_x_prog_more;
+    setText(p, msg);
+    showBlock($('#s2-end'), st.unlocked);
+  }
+  function measure(){
+    const a = st.a, n = st.n, key = a + '-' + n;
+    log('s2_measure', { a: a, b: a + n, n: n });
+    if (!st.measured.has(key)){
+      st.measured.add(key);
+      st.rows.push({ a: a, n: n, fresh: true });
+      if (st.rows.length > 5) st.rows.shift();
+      renderRows();
+    }
+    updateProgress();
+  }
+
+  function mount(r){
+    root = r;
+    root.innerHTML =
+      '<div class="kick">' + kick(2) + '</div>' +
+      '<h1 class="title">' + T.s2_title + '</h1>' +
+      '<p class="lead">' + T.s2_lead + '</p>' +
+      '<div class="frame" id="s2-frame"><svg id="s2-svg" class="cv" role="img" aria-label="Đường thẳng đi lên, độ dốc 0,20 mét mỗi bước. Người que đi từ A; mỗi bước cao thêm 0,20 mét."></svg></div>' +
+      '<div class="read" aria-live="polite"><div class="r1" id="s2-r1"></div><div class="r2" id="s2-r2"></div></div>' +
+      '<div class="row">' +
+        '<button type="button" class="btn sm" id="s2-pp">' + T.s2_b_pause + '</button>' +
+        '<button type="button" class="btn sm" id="s2-skip">' + T.s2_b_skip + '</button>' +
+        '<button type="button" class="btn sm accent" id="s2-stepbtn" hidden>' + T.s2_b_step + '</button>' +
+        '<button type="button" class="btn sm" id="s2-slow" hidden>' + T.s2_b_slow + '</button>' +
+      '</div>' +
+      '<div class="card" id="s2-fwrap" hidden>' +
+        '<h3>' + T.s2_f_title + '</h3>' +
+        '<p class="fl" id="s2-f0" hidden></p><p class="fl" id="s2-f1" hidden></p><p class="fl" id="s2-f2" hidden></p>' +
+        '<button type="button" class="btn sm accent pulsebtn" id="s2-fnext"></button>' +
+      '</div>' +
+      '<div id="s2-ctl" hidden>' +
+        '<h2 class="sec">' + T.s2_x_title + '</h2>' +
+        '<span class="lab" style="margin-top:0">' + T.s2_x_start + '</span>' +
+        '<div class="seg" id="s2-ctl-a">' + STARTS.map(v => '<button type="button" class="segbtn" data-a="' + v + '" aria-pressed="false">' + fill(T.s2_x_startbtn, { a: v }) + '</button>').join('') + '</div>' +
+        '<label class="lab" for="s2-nr">' + T.s2_x_steps + '</label>' +
+        '<input type="range" id="s2-nr" min="0" max="2" step="1" value="1" aria-valuetext="5 bước">' +
+        '<div class="stops">' + T.s2_x_stops.split('|').map(x => '<span>' + x + '</span>').join('') + '</div>' +
+        '<div class="card" id="s2-tbwrap" hidden><h3>' + T.s2_x_table + '</h3><table class="tb" id="s2-tb"><thead><tr>' + T.s2_x_th.split('|').map(x => '<th>' + x + '</th>').join('') + '</tr></thead><tbody></tbody></table></div>' +
+        '<p class="note" id="s2-prog"></p>' +
+      '</div>' +
+      '<div id="s2-end" hidden>' +
+        '<div class="conclusion">' + T.s2_conclusion + '</div>' +
+        '<div class="card" id="s2-symtxt"><p style="margin:0 0 6px">' + T.s2_sym_text + '</p><div class="math">' + fill(T.s2_sym_formula, { frac: frac('f(b) ' + MINUS + ' f(a)', 'b ' + MINUS + ' a') }) + '</div></div>' +
+        '<p class="bridge">' + T.s2_bridge + '</p>' +
+      '</div>';
+    svg = $('#s2-svg'); frame = $('#s2-frame');
+    clock = makeClock(paint, finishRun);
+    $('#s2-pp').addEventListener('click', () => { if (clock.playing) clock.pause(); else clock.play(); syncButtons(); });
+    $('#s2-skip').addEventListener('click', () => { clock.pause(); clock.seek(clock.total); finishRun(); });
+    $('#s2-stepbtn').addEventListener('click', () => {
+      const nb = boundaries().find(v => v > clock.t + 1);
+      clock.seek(nb === undefined ? clock.total : nb);
+      if (clock.t >= clock.total) finishRun();
+    });
+    $('#s2-slow').addEventListener('click', () => startRun(st.a, st.n, true));
+    $('#s2-fnext').addEventListener('click', nextStage);
+    $('#s2-ctl-a').querySelectorAll('button').forEach(b => b.addEventListener('click', () => startRun(+b.dataset.a, st.n, false)));
+    $('#s2-nr').addEventListener('input', e => { $('#s2-nr').setAttribute('aria-valuetext', fill(T.s2_x_row, { n: STEPS[+e.target.value] })); });
+    $('#s2-nr').addEventListener('change', e => startRun(st.a, STEPS[+e.target.value], false));
+    renderRows();
+    if (st.firstDone){
+      plan = makePlan(st.n, false);
+      clock.setTotal(plan.total);
+      $('#s2-ctl').hidden = st.stage < 1;
+      $('#s2-ctl-a').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.a === st.a)));
+      $('#s2-nr').value = String(STEPS.indexOf(st.n));
+      showFormula();
+      clock.seek(plan.total);
+      updateProgress();
+    } else {
+      st.a = 0; st.n = 5;
+      startRun(0, 5, true);
+      updateProgress();
+    }
+  }
+  return {
+    tab: T.tab2, hasNext: true,
+    mount: mount,
+    unmount(){ if (clock) clock.stop(); svg = null; },
+    redraw(){ if (root && clock) paint(clock.t); },
+    dbg: { seek: t => { clock.pause(); clock.seek(t); }, get clock(){ return clock; }, get plan(){ return plan; } }
+  };
+}
+
+/* ============================================================
+   MÀN 3 — Trên núi, nên chọn hai điểm nào?
+   Ba dòng chữ đứng yên + gợi ý đọc + nút "Xem minh họa" → chạy MỘT lượt cả 5 điểm B (120, 40, 10, 2, 0,1 m)
+   → chỉ khi chạy xong mới hiện: dòng chú thích 0,1 m, bảng kết quả, rồi nút "Viết thành công thức".
+   Quy tắc: trong lúc hình chuyển động thì KHÔNG có chữ nào chạy hay đổi (kể cả nhãn khoảng cách / độ phóng đại).
+   Mọi thứ trong hình là hàm của thời gian t (ms).
+   ============================================================ */
+function createS3(){
+  const st = state.s3;                              // { ran, stage, ranBack }
+  const A = 240;                                    // A cố định, cách gốc 240 m
+  /* ⏱ THỜI GIAN MÀN 3 (ms)
+     TRANSFER = thời gian "lấy vùng quanh A rồi phóng lớn xuống khung dưới" lúc mở đầu.
+     JUMP     = thời gian B nhảy từ mốc này sang mốc kế tiếp (độ phóng đại tăng dần trong lúc nhảy).
+     DS       = 5 khoảng cách A–B (m).
+     HOLD     = thời gian hình ĐỨNG YÊN ở từng mốc (để học sinh đọc nhãn "B cách A …", "Phóng đại ×…").
+                Mốc cuối (0,1 m) để ngắn (1100) vì sau đó bảng kết quả hiện ra ngay: để lâu học sinh tưởng bị đơ. */
+  const TRANSFER = 2300, JUMP = 900;
+  const DS = [120, 40, 10, 2, 0.1], HOLD = [2400, 2200, 2200, 2400, 1100];
+  const RUNS = {
+    1: { ds: DS, from: null, hold: HOLD, dir: 1 },      // B ở phía trước A
+    2: { ds: DS, from: null, hold: HOLD, dir: -1 }      // xem từ phía sau
+  };
+  Object.keys(RUNS).forEach(id => {
+    const R = RUNS[id]; R.S = [];
+    R.ds.forEach((d, k) => {
+      let jumpS, arrive;
+      if (k === 0){ jumpS = null; arrive = TRANSFER; }
+      else { jumpS = R.S[k - 1].end; arrive = jumpS + JUMP; }
+      R.S.push({ d: d, jumpS: jumpS, arrive: arrive, end: arrive + R.hold[k] });
+    });
+    R.total = R.S[R.S.length - 1].end;
+    R.bounds = R.S.map(s => s.end);
+  });
+  let root, svg, clock = null, run = 1;
+  const $ = s => root.querySelector(s);
+  const est = (d, dir) => (mh(A + dir * d) - mh(A)) / (dir * d);
+
+  function distAt(R, t){
+    const S = R.S;
+    for (let k = 0; k < S.length; k++){
+      if (t < S[k].arrive){
+        const prev = k ? S[k - 1].d : R.from;
+        if (prev === null) return S[0].d;
+        if (t < S[k].jumpS) return prev;
+        const u = ease((t - S[k].jumpS) / JUMP);
+        return Math.exp(Math.log(prev) + (Math.log(S[k].d) - Math.log(prev)) * u);
+      }
+    }
+    return S[S.length - 1].d;
+  }
+  function arrived(R, t){ let r = -1; R.S.forEach((s, k) => { if (t >= s.arrive) r = k; }); return r; }
+
+  /* đang nhảy (hoặc đang lấy vùng phóng lớn)? — khi đó không hiện nhãn số nào */
+  function moving(R, t){
+    if (t < TRANSFER) return true;
+    return R.S.some(x => x.jumpS !== null && t >= x.jumpS && t < x.arrive);
+  }
+
+  /* 🎨 VẼ: toàn bộ hình màn 3 (núi nhỏ ở trên + khung phóng lớn ở dưới) là hàm của thời gian t. Không có timer nào ở trong này. */
+  function paint(t){
+    if (!svg) return;
+    const R = RUNS[run], dir = R.dir;
+    const W = svg.clientWidth || 600;
+    const L = 18, Rr = 18, sx = (W - L - Rr) / 600, sy = VEXAG * sx;          // CÙNG tỉ lệ VEXAG với màn 1, 2
+    const topM = 48, base = topM + 40 * sy, OH = base + 24;
+    const ZH = clamp(W * 0.36, 170, 230), ty = OH + 58, total = ty + ZH + 18;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + total);
+    svg.style.height = total + 'px';
+    svg.replaceChildren();
+    const X = x => L + x * sx, Y = y => base - y * sy;
+    const d = distAt(R, t), h = dir * d, b = A + h, fa = mh(A), fb = mh(b);
+    const ax = X(A), ay = Y(fa), bx = X(b), by = Y(fb);
+
+    node(svg, 'text', { x: 4, y: 14, class: 'ax' }, T.s3_whole_title);
+    line(svg, L, base, W - Rr, base, 'var(--line)', 1);
+    const whole = [];
+    for (let x = 0; x <= 600; x += 2) whole.push([X(x), Y(mh(x))]);
+    node(svg, 'path', { d: pathD(whole) + ' L' + X(600) + ',' + base + ' L' + X(0) + ',' + base + ' Z', fill: 'var(--teal)', opacity: '.1' });
+    path(svg, whole, 'var(--teal)', 2.2, { opacity: '.6' });
+    [0, 240, 300, 600].forEach(x => node(svg, 'text', { x: X(x), y: base + 16, 'text-anchor': x === 0 ? 'start' : (x === 600 ? 'end' : 'middle'), class: 'ax' }, String(x)));
+    dot(svg, ax, ay, 'A', 'var(--text)', 'below');
+    dot(svg, bx, by, 'B', 'var(--violet)', Math.abs(bx - ax) < 25 ? 'above' : 'below');
+
+    const seg = [];
+    for (let i = 0; i <= 120; i++){ const x = A + h * i / 120; seg.push([X(x), Y(mh(x))]); }
+    const minY = Math.min.apply(null, seg.map(p => p[1])), maxY = Math.max.apply(null, seg.map(p => p[1]));
+    const target = { x: 14, y: ty, w: W - 28, h: ZH };
+    const mag = Math.min(target.w / (Math.abs(bx - ax) * 1.45), target.h / (Math.max(0.0001, maxY - minY) * 1.65));
+    const source = { x: (ax + bx) / 2 - target.w / mag / 2, y: (minY + maxY) / 2 - target.h / mag / 2, w: target.w / mag, h: target.h / mag };
+    node(svg, 'rect', { x: source.x, y: source.y, width: source.w, height: source.h, fill: 'var(--amber)', opacity: '.1' });
+    node(svg, 'rect', { x: source.x, y: source.y, width: source.w, height: source.h, fill: 'none', stroke: 'var(--amber)', 'stroke-width': 1.8, rx: 2 });
+    path(svg, seg, 'var(--teal)', 3.4);
+
+    const transfer = prog(t, 0, TRANSFER), eased = ease(transfer);
+    node(svg, 'text', { x: W / 2, y: ty - 8, 'text-anchor': 'middle', class: 'ax' }, T.s3_zoom_title);
+    if (transfer > 0){
+      line(svg, source.x, source.y + source.h, target.x, target.y, 'var(--amber)', 1, { 'stroke-dasharray': '4 5', opacity: 0.5 * transfer });
+      line(svg, source.x + source.w, source.y + source.h, target.x + target.w, target.y, 'var(--amber)', 1, { 'stroke-dasharray': '4 5', opacity: 0.5 * transfer });
+      const box = { x: source.x + (target.x - source.x) * eased, y: source.y + (target.y - source.y) * eased, w: source.w + (target.w - source.w) * eased, h: source.h + (target.h - source.h) * eased };
+      node(svg, 'rect', { x: box.x, y: box.y, width: box.w, height: box.h, fill: 'var(--panel2)', stroke: 'var(--amber)', 'stroke-width': 1.5, rx: 7 });
+      const defs = node(svg, 'defs'), clip = node(defs, 'clipPath', { id: 's3-crop' });
+      node(clip, 'rect', { x: box.x + 2, y: box.y + 2, width: Math.max(0, box.w - 4), height: Math.max(0, box.h - 4), rx: 5 });
+      const g = node(svg, 'g', { 'clip-path': 'url(#s3-crop)' });
+      const m = box.w / source.w, zx = x => box.x + (x - source.x) * m, zy = y => box.y + (y - source.y) * m;
+      const crop = [];
+      for (let i = 0; i <= 200; i++){ const px = source.x + source.w * i / 200, x = (px - L) / sx; crop.push([zx(px), zy(Y(mh(x)))]); }
+      path(g, crop, 'var(--teal)', 2, { opacity: '.45' });
+      const local = seg.map(p => [zx(p[0]), zy(p[1])]);
+      if (transfer >= 1) node(g, 'path', { d: pathD(local) + ' L' + zx(ax) + ',' + zy(ay) + ' Z', fill: 'var(--violet)', opacity: '.14' });
+      path(g, local, 'var(--teal)', 3.4);
+      if (transfer >= 1) line(g, zx(ax), zy(ay), zx(bx), zy(by), 'var(--violet)', 2.5, { 'stroke-dasharray': '7 5', id: 's3-secant' });
+      if (transfer > 0.75){ dot(g, zx(ax), zy(ay), 'A', 'var(--text)', 'below'); dot(g, zx(bx), zy(by), 'B', 'var(--violet)', 'above'); }
+      if (transfer >= 1 && !moving(R, t)){
+        node(svg, 'text', { x: target.x + 12, y: target.y + 20, style: 'font-weight:700;fill:var(--text)', id: 's3-dist' }, fill(T.s3_dist, { d: fmt(d, 1) }));
+        node(svg, 'text', { x: target.x + 12, y: target.y + 38, class: 'ax', id: 's3-mag' }, fill(T.s3_mag, { m: mag < 10 ? F(mag, 1) : big(mag) }));
+        node(svg, 'text', { x: target.x + target.w - 12, y: target.y + target.h - 10, 'text-anchor': 'end', class: 'ax' }, T.s3_mag_note);
+      }
+    } else {
+      node(svg, 'rect', { x: target.x, y: target.y, width: target.w, height: target.h, fill: 'none', stroke: 'var(--line)', 'stroke-width': 1, 'stroke-dasharray': '5 6', rx: 7 });
+      node(svg, 'text', { x: W / 2, y: target.y + target.h / 2, 'text-anchor': 'middle', class: 'ax' }, T.s3_zoom_empty);
+    }
+    syncButtons();
+  }
+
+  /* ---------- 📋 KẾT QUẢ: bảng chỉ hiện sau khi chạy xong cả 5 điểm (flash = hàng mới nhấp nháy vàng) ---------- */
+  function rowsHTML(ds, dir, flash){
+    return ds.map(d => '<tr' + (flash ? ' class="new"' : '') + '><td>' + fmt(d, 1) + '</td><td class="v">' + F(est(d, dir), 4) + '</td></tr>').join('');
+  }
+  function renderResults(flash){
+    $('#s3-tb tbody').innerHTML = rowsHTML(DS, 1, flash);
+    showBlock($('#s3-after'), st.ran);
+  }
+  function renderBack(){
+    $('#s3-tb-back tbody').innerHTML = rowsHTML(DS, -1, true);
+    showBlock($('#s3-back-res'), st.ranBack);
+  }
+  /* MỘT nút: công thức + thay số cùng hiện; rồi "h tiến đến 0" (2 nút) */
+  const STAGE_BTN = () => [T.s3_f_btn0, T.s3_f_btn1, T.s3_f_btn2];
+  function renderPost(){
+    const s = st.stage;
+    const d = 2, fa = mh(A), fb = mh(A + d);
+    const sl = { A: '<span class="sA">' + T.s2_hA + '</span>', B: '<span class="sB">' + T.s2_hB + '</span>', N: '<span class="sN">' + T.s2_f_slotN + '</span>' };
+    $('#s3-fw').innerHTML = fill(T.s3_f_words, sl);
+    $('#s3-fn').innerHTML = fill(T.s3_f_nums, { hb: '<span class="sB">' + F(fb, 6) + ' m</span>', ha: '<span class="sA">' + F(fa, 6) + ' m</span>', n: '<span class="sN">' + d + '</span>', s: F(est(d, 1), 4) });
+    $('#s3-fnote').textContent = fill(T.s3_f_numnote, { d: d, a: A, b: A + d });
+    showBlock($('#s3-fcard'), s >= 1);
+    showBlock($('#s3-fw'), s >= 1); showBlock($('#s3-fn'), s >= 1); showBlock($('#s3-fnote'), s >= 1);
+    $('#s3-fn').style.animationDelay = '0.5s'; $('#s3-fnote').style.animationDelay = '0.5s';     // công thức trước, thay số ngay sau
+    showBlock($('#s3-hcard'), s >= 2);
+    showBlock($('#s3-hw'), s >= 2); showBlock($('#s3-hs'), s >= 3);
+    showBlock($('#s3-end'), s >= 3);
+    const btn = $('#s3-next');
+    btn.hidden = !st.ran || s >= 3;
+    if (s < 3) btn.textContent = STAGE_BTN()[s];
+  }
+  function nextStage(){
+    st.stage++; renderPost();
+    try { $('#s3-next').scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); } catch (e) {}
+  }
+
+  /* ---------- chạy ---------- */
+  function bring(sel, block){
+    const el = $(sel);
+    try { el.scrollIntoView({ block: block || 'start', behavior: reduced() ? 'auto' : 'smooth' }); } catch (e) {}
+  }
+  function startRun(id, isReplay){
+    run = id;
+    const R = RUNS[id];
+    clock.stop(); clock.setTotal(R.total);
+    $('#s3-fig').hidden = false;
+    $('#s3-go').hidden = true; $('#s3-read').hidden = true;
+    if (st.ran) $('#s3-cap').style.visibility = 'hidden';       // chạy lại: chú thích chờ đến khi chạy xong
+    log(isReplay ? 's3_replay' : 's3_start', { dir: R.dir, run: id });
+    if (isReplay) log('s3_start', { dir: R.dir, run: id });
+    clock.seek(0);
+    if (!reduced()) clock.play();
+    syncButtons();
+    bring('#s3-fig');
+  }
+  /* ✔ KẾT THÚC MOTION: hiện dòng chú thích 0,1 m, bảng 5 hàng (renderResults), phần công thức (renderPost) rồi cuộn xuống.
+     Hàm này chạy ngay khi clock.t chạm R.total, tức là ngay sau HOLD của mốc cuối. */
+  function finishRun(){
+    $('#s3-cap').style.visibility = 'visible';
+    if (run === 1 && !st.ran){ st.ran = true; renderResults(true); renderPost(); bring('#s3-cap', 'center'); }
+    else if (run === 2){ st.ranBack = true; renderBack(); bring('#s3-back-res'); }
+    syncButtons();
+  }
+  function syncButtons(){
+    if (!root || !clock) return;
+    const done = clock.t >= clock.total, rm = reduced();
+    $('#s3-pp').hidden = done || rm;
+    $('#s3-pp').textContent = clock.playing ? T.s3_b_pause : T.s3_b_resume;
+    $('#s3-skip').hidden = done;
+    $('#s3-skip').textContent = rm ? T.s3_b_step : T.s3_b_skip;
+    $('#s3-skip').classList.toggle('pulsebtn', rm && !done);
+    $('#s3-replay').hidden = !done;
+  }
+
+  function mount(r){
+    root = r; run = 1;
+    const th = T.s3_r_th.split('|'), cp = T.s3_c_end.split('|');
+    root.innerHTML =
+      '<div class="kick">' + kick(3) + '</div>' +
+      '<h1 class="title">' + T.s3_title + '</h1>' +
+      '<div class="intro" id="s3-intro"><p class="on">' + T.s3_t1 + '</p><p class="on">' + T.s3_t2 + '</p><p class="on">' + T.s3_t3 + '</p></div>' +
+      '<p class="readhint" id="s3-read">' + T.s3_read + '</p>' +
+      '<div class="row"><button type="button" class="btn primary pulsebtn" id="s3-go" style="flex:none">' + T.s3_go + '</button></div>' +
+      '<div id="s3-fig" hidden style="margin-top:6px">' +
+        '<div class="row stk" id="s3-ctl" style="margin-top:0"><button type="button" class="btn sm" id="s3-pp">' + T.s3_b_pause + '</button><button type="button" class="btn sm" id="s3-skip">' + T.s3_b_skip + '</button><button type="button" class="btn sm" id="s3-replay" hidden>' + T.s3_b_replay + '</button></div>' +
+        '<div class="frame"><svg id="s3-svg" class="cv" role="img" aria-label="Vùng quanh A và B được lấy từ hình núi và phóng lớn xuống khung dưới. B nhảy dần về gần A, độ phóng đại tăng."></svg></div>' +
+        '<div class="legend"><span><i></i>' + T.s3_leg_mtn + '</span><span><i class="d"></i>' + T.s3_leg_sec + '</span></div>' +
+      '</div>' +
+      '<div id="s3-after" hidden>' +
+        '<div class="caption" id="s3-cap" style="min-height:0;scroll-margin-top:124px"><p class="cap1">' + cp[0] + '</p><p class="cap2">' + (cp[1] || '') + '</p></div>' +
+        '<div class="card" id="s3-res"><h3>' + T.s3_r_title + '</h3>' +
+          '<table class="tb" id="s3-tb"><thead><tr><th>' + th[0] + '</th><th>' + th[1] + '</th></tr></thead><tbody></tbody></table>' +
+          '<p class="note" style="font-size:14px;color:var(--amber)">' + T.s3_r_note2 + '</p>' +
+          '<p class="note" style="font-size:14px">' + T.s3_r_note1 + '</p>' +
+        '</div>' +
+        '<div id="s3-post">' +
+          '<div class="card" id="s3-fcard" hidden><h3>' + T.s3_f_title + '</h3>' +
+            '<p class="fl" id="s3-fw" hidden></p><p class="fl" id="s3-fn" hidden></p><p class="note" id="s3-fnote" hidden style="margin:0"></p>' +
+          '</div>' +
+          '<div class="card" id="s3-hcard" hidden>' +
+            '<p style="margin:0 0 6px;font-size:17px" id="s3-hd">' + T.s3_h_def + '</p>' +
+            '<p style="margin:0 0 6px;font-size:17px" id="s3-hw" hidden>' + T.s3_h_words + '</p>' +
+            '<p style="margin:0;font-size:19px" id="s3-hs" hidden>' + T.s3_h_sym + '</p>' +
+          '</div>' +
+          '<div class="row"><button type="button" class="btn sm accent pulsebtn" id="s3-next"></button></div>' +
+          '<div id="s3-end" hidden>' +
+            '<div class="conclusion">' + T.s3_conclusion + '</div>' +
+            '<details><summary>' + T.s3_back_sum + '</summary><p>' + T.s3_back_text + '</p><p><button type="button" class="btn sm" id="s3-back">' + T.s3_back_btn + '</button></p>' +
+              '<div class="card" id="s3-back-res" hidden style="scroll-margin-top:124px"><h3>' + T.s3_back_table + '</h3><table class="tb" id="s3-tb-back"><thead><tr><th>' + th[0] + '</th><th>' + th[1] + '</th></tr></thead><tbody></tbody></table></div></details>' +
+            '<p class="bridge">' + T.s3_bridge + '</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    svg = $('#s3-svg');
+    clock = makeClock(paint, finishRun);
+    $('#s3-go').addEventListener('click', () => startRun(1));
+    $('#s3-pp').addEventListener('click', () => {
+      if (clock.playing){ clock.pause(); log('s3_pause', { t: Math.round(clock.t) }); } else clock.play();
+      syncButtons();
+    });
+    $('#s3-skip').addEventListener('click', () => {
+      const R = RUNS[run], nb = R.bounds.find(v => v > clock.t + 1), was = clock.playing;
+      clock.pause();
+      clock.seek(nb === undefined ? R.total : nb);
+      if (clock.t >= R.total) finishRun();
+      else if (was) clock.play();
+      syncButtons();
+    });
+    $('#s3-replay').addEventListener('click', () => startRun(run, true));
+    $('#s3-next').addEventListener('click', nextStage);
+    $('#s3-back').addEventListener('click', () => startRun(2));
+    // quay lại màn này sau khi đã xem: giữ nguyên trạng thái
+    if (st.ran){
+      $('#s3-fig').hidden = false; $('#s3-go').hidden = true; $('#s3-read').hidden = true;
+      clock.setTotal(RUNS[1].total); clock.seek(RUNS[1].total);
+      renderResults(false); renderPost(); if (st.ranBack) renderBack();
+    } else {
+      st.stage = 0;
+    }
+    syncButtons();
+  }
+  return {
+    tab: T.tab3, hasNext: true,
+    mount: mount,
+    unmount(){ if (clock) clock.stop(); svg = null; },
+    redraw(){ if (svg && clock && !$('#s3-fig').hidden) paint(clock.t); },
+    dbg: { seek: t => { clock.pause(); clock.seek(t); syncButtons(); }, RUNS: RUNS, get run(){ return run; }, get clock(){ return clock; } }
+  };
+}
+/* ============================================================
+   MÀN 4 — Viết độ dốc thành công thức, rồi gọi tên (đạo hàm, tiếp tuyến, hệ số góc)
+   Chữ đứng yên → nút "Viết thành công thức" (chữ đổi sang ký hiệu) → chữ + nút → minh họa 1 (hai điểm B tiến sát A từ hai phía,
+   KHÔNG có chữ nào chạy) → bảng + định nghĩa + tên "đạo hàm" → chữ + nút → minh họa 2 (đường nối khi B sát A) → "tiếp tuyến", "hệ số góc".
+   Quy tắc: trong lúc hình chuyển động không có chữ nào chạy hay đổi. Mọi thứ trong hình là hàm của thời gian t (ms).
+   ============================================================ */
+function createS4(){
+  const st = state.s4;                                   // { f, ran1, ran2 }
+  const A = 240;                                         // A cố định, cách gốc 240 m (như màn 3)
+  /* ⏱ THỜI GIAN MÀN 4 — HÌNH 1 (hai điểm B₋, B₊ tiến sát A). Ý nghĩa như màn 3:
+     TRANSFER = lấy vùng quanh A và phóng lớn; JUMP = B nhảy sang mốc kế; HOLD = đứng yên ở từng mốc.
+     HOLD mốc cuối (0,1 m) để ngắn (1100) để bảng hiện ngay, tránh cảm giác bị đơ. */
+  const TRANSFER = 2000, JUMP = 800;
+  const DS = [120, 40, 10, 2, 0.1], HOLD = [1900, 1800, 1800, 1900, 1100];
+  const R1 = { S: [] };
+  DS.forEach((d, k) => {
+    const jumpS = k ? R1.S[k - 1].end : null, arrive = k ? jumpS + JUMP : TRANSFER;
+    R1.S.push({ d: d, jumpS: jumpS, arrive: arrive, end: arrive + HOLD[k] });
+  });
+  R1.total = R1.S[R1.S.length - 1].end;
+  R1.bounds = R1.S.map(s => s.end);
+  /* ⏱ HÌNH 2 (đường nối A–B xoay thành tiếp tuyến): h giảm từ 120 xuống 0,1 (đều theo thang log).
+     start = lúc bắt đầu giảm h; go = lúc h chạm 0,1; total = lúc kết thúc.
+     total − go = thời gian hình đứng yên ở cuối trước khi chữ kết luận hiện (để ngắn, 900). */
+  const R2 = { start: 400, go: 8400, total: 9300 };
+  R2.bounds = [R2.start + (R2.go - R2.start) * 0.4, R2.start + (R2.go - R2.start) * 0.75, R2.total];
+
+  let root, svg1, svg2, clock1 = null, clock2 = null;
+  const $ = s => root.querySelector(s);
+  const est = (d, dir) => (mh(A + dir * d) - mh(A)) / (dir * d);
+  const C_L = 'var(--down)', C_R = 'var(--violet)';
+
+  /* ---------- 🎨 minh họa 1: hai điểm B (vẽ bằng paint1(t); distAt(t) cho biết lúc t thì B cách A bao nhiêu m) ---------- */
+  function distAt(t){
+    const S = R1.S;
+    for (let k = 0; k < S.length; k++){
+      if (t < S[k].arrive){
+        if (k === 0) return S[0].d;
+        const prev = S[k - 1].d;
+        if (t < S[k].jumpS) return prev;
+        const u = ease((t - S[k].jumpS) / JUMP);
+        return Math.exp(Math.log(prev) + (Math.log(S[k].d) - Math.log(prev)) * u);
+      }
+    }
+    return S[S.length - 1].d;
+  }
+  function arrived1(t){ let r = -1; R1.S.forEach((s, k) => { if (t >= s.arrive) r = k; }); return r; }
+  function moving1(t){
+    if (t < TRANSFER) return true;
+    return R1.S.some(x => x.jumpS !== null && t >= x.jumpS && t < x.arrive);
+  }
+  function labB(p, x, y, sign, color, pos){      // nhãn B₋ / B₊ bằng tspan (không phụ thuộc phông)
+    node(p, 'circle', { cx: x, cy: y, r: 5.5, fill: 'var(--bg)', stroke: color, 'stroke-width': 2.6 });
+    const left = pos === 'left';
+    const tx = node(p, 'text', { x: x + (left ? -10 : 9), y: y - 11, 'text-anchor': left ? 'end' : 'start', 'font-weight': 700 });
+    node(tx, 'tspan', {}, 'B');
+    node(tx, 'tspan', { dy: 4, 'font-size': 10 }, sign);
+  }
+
+  function paint1(t){
+    if (!svg1) return;
+    const W = svg1.clientWidth || 600;
+    const L = 18, Rr = 18, sx = (W - L - Rr) / 600, sy = VEXAG * sx;
+    const topM = 48, base = topM + 40 * sy, OH = base + 24;
+    const ZH = clamp(W * 0.36, 170, 230), ty = OH + 58, total = ty + ZH + 18;
+    svg1.setAttribute('viewBox', '0 0 ' + W + ' ' + total);
+    svg1.style.height = total + 'px';
+    svg1.replaceChildren();
+    const X = x => L + x * sx, Y = y => base - y * sy;
+    const d = distAt(t), bl = A - d, br = A + d, fa = mh(A), fl = mh(bl), fr = mh(br);
+    const ax = X(A), ay = Y(fa), blx = X(bl), bly = Y(fl), brx = X(br), bry = Y(fr);
+
+    node(svg1, 'text', { x: 4, y: 14, class: 'ax' }, T.s4_whole_title);
+    line(svg1, L, base, W - Rr, base, 'var(--line)', 1);
+    const whole = [];
+    for (let x = 0; x <= 600; x += 2) whole.push([X(x), Y(mh(x))]);
+    node(svg1, 'path', { d: pathD(whole) + ' L' + X(600) + ',' + base + ' L' + X(0) + ',' + base + ' Z', fill: 'var(--teal)', opacity: '.1' });
+    path(svg1, whole, 'var(--teal)', 2.2, { opacity: '.6' });
+    [0, 240, 300, 600].forEach(x => node(svg1, 'text', { x: X(x), y: base + 16, 'text-anchor': x === 0 ? 'start' : (x === 600 ? 'end' : 'middle'), class: 'ax' }, String(x)));
+    dot(svg1, ax, ay, 'A', 'var(--text)', 'below');
+    labB(svg1, blx, bly, '−', C_L, 'left');
+    labB(svg1, brx, bry, '+', C_R, 'right');
+
+    const seg = [];
+    for (let i = 0; i <= 160; i++){ const x = bl + (br - bl) * i / 160; seg.push([X(x), Y(mh(x))]); }
+    const minY = Math.min.apply(null, seg.map(p => p[1])), maxY = Math.max.apply(null, seg.map(p => p[1]));
+    const target = { x: 14, y: ty, w: W - 28, h: ZH };
+    const mag = Math.min(target.w / (2 * d * sx * 1.25), target.h / (Math.max(0.0001, maxY - minY) * 1.65));
+    const source = { x: ax - target.w / mag / 2, y: (minY + maxY) / 2 - target.h / mag / 2, w: target.w / mag, h: target.h / mag };
+    node(svg1, 'rect', { x: source.x, y: source.y, width: source.w, height: source.h, fill: 'var(--amber)', opacity: '.1' });
+    node(svg1, 'rect', { x: source.x, y: source.y, width: source.w, height: source.h, fill: 'none', stroke: 'var(--amber)', 'stroke-width': 1.8, rx: 2 });
+    path(svg1, seg, 'var(--teal)', 3.4);
+
+    const transfer = prog(t, 0, TRANSFER), eased = ease(transfer);
+    node(svg1, 'text', { x: W / 2, y: ty - 8, 'text-anchor': 'middle', class: 'ax' }, T.s4_zoom_title);
+    if (transfer > 0){
+      line(svg1, source.x, source.y + source.h, target.x, target.y, 'var(--amber)', 1, { 'stroke-dasharray': '4 5', opacity: 0.5 * transfer });
+      line(svg1, source.x + source.w, source.y + source.h, target.x + target.w, target.y, 'var(--amber)', 1, { 'stroke-dasharray': '4 5', opacity: 0.5 * transfer });
+      const box = { x: source.x + (target.x - source.x) * eased, y: source.y + (target.y - source.y) * eased, w: source.w + (target.w - source.w) * eased, h: source.h + (target.h - source.h) * eased };
+      node(svg1, 'rect', { x: box.x, y: box.y, width: box.w, height: box.h, fill: 'var(--panel2)', stroke: 'var(--amber)', 'stroke-width': 1.5, rx: 7 });
+      const defs = node(svg1, 'defs'), clip = node(defs, 'clipPath', { id: 's4-crop' });
+      node(clip, 'rect', { x: box.x + 2, y: box.y + 2, width: Math.max(0, box.w - 4), height: Math.max(0, box.h - 4), rx: 5 });
+      const g = node(svg1, 'g', { 'clip-path': 'url(#s4-crop)' });
+      const m = box.w / source.w, zx = x => box.x + (x - source.x) * m, zy = y => box.y + (y - source.y) * m;
+      const crop = [];
+      for (let i = 0; i <= 200; i++){ const px = source.x + source.w * i / 200, x = (px - L) / sx; crop.push([zx(px), zy(Y(mh(x)))]); }
+      path(g, crop, 'var(--teal)', 2, { opacity: '.45' });
+      const local = seg.map(p => [zx(p[0]), zy(p[1])]);
+      path(g, local, 'var(--teal)', 3.4);
+      if (transfer >= 1){
+        line(g, zx(ax), zy(ay), zx(blx), zy(bly), C_L, 2.5, { 'stroke-dasharray': '7 5', id: 's4-sec-l' });
+        line(g, zx(ax), zy(ay), zx(brx), zy(bry), C_R, 2.5, { 'stroke-dasharray': '7 5', id: 's4-sec-r' });
+      }
+      if (transfer > 0.75){
+        dot(g, zx(ax), zy(ay), 'A', 'var(--text)', 'below');
+        labB(g, zx(blx), zy(bly), '−', C_L, 'left');
+        labB(g, zx(brx), zy(bry), '+', C_R, 'right');
+      }
+      if (transfer >= 1 && !moving1(t)){      // nhãn số chỉ hiện khi hình đứng yên
+        node(svg1, 'text', { x: target.x + 12, y: target.y + 20, style: 'font-weight:700;fill:' + C_L, id: 's4-hl' }, fill(T.s4_hl, { h: fmt(-d, 1) }));
+        node(svg1, 'text', { x: target.x + 12, y: target.y + 38, style: 'font-weight:700;fill:' + C_R, id: 's4-hr' }, fill(T.s4_hr, { h: fmt(d, 1) }));
+        node(svg1, 'text', { x: target.x + 12, y: target.y + 56, class: 'ax', id: 's4-mag' }, fill(T.s4_mag, { m: mag < 10 ? F(mag, 1) : big(mag) }));
+      }
+    } else {
+      node(svg1, 'rect', { x: target.x, y: target.y, width: target.w, height: target.h, fill: 'none', stroke: 'var(--line)', 'stroke-width': 1, 'stroke-dasharray': '5 6', rx: 7 });
+      node(svg1, 'text', { x: W / 2, y: target.y + target.h / 2, 'text-anchor': 'middle', class: 'ax' }, T.s4_zoom_empty);
+    }
+    syncButtons(1);
+  }
+
+  /* ---------- minh họa 2: đường nối quay dần thành tiếp tuyến ---------- */
+  function hAt(t){
+    const u = ease(prog(t, R2.start, R2.go));
+    return Math.exp(Math.log(120) + (Math.log(0.1) - Math.log(120)) * u);
+  }
+  function paint2(t){
+    if (!svg2) return;
+    const W = svg2.clientWidth || 600, L = 14, Rr = 14, x0w = 100, x1w = 380;
+    const sx = (W - L - Rr) / (x1w - x0w), sy = VEXAG * sx;
+    const topM = 12, base = topM + 42 * sy, H = base + 30;
+    svg2.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg2.style.height = H + 'px';
+    svg2.replaceChildren();
+    const X = x => L + (x - x0w) * sx, Y = y => base - y * sy;
+    const h = hAt(t), b = A + h, Q = (mh(b) - mh(A)) / h;
+    const defs = node(svg2, 'defs'), cp = node(defs, 'clipPath', { id: 's4-clip2' });
+    node(cp, 'rect', { x: L, y: topM - 4, width: W - L - Rr, height: base - topM + 4 });
+    [0, 20, 40].forEach(v => line(svg2, L, Y(v), W - Rr, Y(v), 'var(--line)', 1));
+    const pts = [];
+    for (let x = x0w; x <= x1w; x += 2) pts.push([X(x), Y(mh(x))]);
+    node(svg2, 'path', { d: pathD(pts) + ' L' + X(x1w) + ',' + Y(0) + ' L' + X(x0w) + ',' + Y(0) + ' Z', fill: 'var(--teal)', opacity: '.13' });
+    path(svg2, pts, 'var(--teal)', 2.6);
+    [120, 180, 240, 300, 360].forEach(x => node(svg2, 'text', { x: X(x), y: base + 16, 'text-anchor': 'middle', class: 'ax' }, String(x)));
+    const g = node(svg2, 'g', { 'clip-path': 'url(#s4-clip2)' });
+    // đường nối kéo dài qua A và B (đường vuông góc với trục thời gian: dùng hệ số Q hiện tại)
+    line(g, X(x0w), Y(mh(A) + Q * (x0w - A)), X(x1w), Y(mh(A) + Q * (x1w - A)), C_R, 3, { 'stroke-linecap': 'round', id: 's4-sline' });
+    const seg = [];
+    for (let i = 0; i <= 60; i++){ const x = A + h * i / 60; seg.push([X(x), Y(mh(x))]); }
+    path(g, seg, 'var(--teal)', 5.2, { 'stroke-linecap': 'round', opacity: '.95', id: 's4-sseg' });
+    dot(svg2, X(A), Y(mh(A)), 'A', 'var(--text)', 'below');
+    node(svg2, 'circle', { cx: X(b), cy: Y(mh(b)), r: 5.5, fill: 'var(--bg)', stroke: C_R, 'stroke-width': 2.6, id: 's4-b2' });
+    node(svg2, 'text', { x: X(b) + (h > 6 ? 9 : -10), y: Y(mh(b)) - 11, 'text-anchor': h > 6 ? 'start' : 'end', 'font-weight': 700 }, 'B');
+    syncButtons(2);
+  }
+
+  /* ---------- bảng ---------- */
+  function renderTable(flash){
+    const rows = DS.map(d => '<tr' + (flash ? ' class="new"' : '') + '><td>' + fmt(d, 1) + '</td><td class="v" style="color:' + C_L + '">' + F(est(d, -1), 4) + '</td><td class="v">' + F(est(d, 1), 4) + '</td></tr>').join('');
+    $('#s4-tb tbody').innerHTML = rows;
+  }
+
+  /* ---------- công thức ---------- */
+  function renderFormula(){
+    const sl = { A: '<span class="sA">' + T.s2_hA + '</span>', B: '<span class="sB">' + T.s2_hB + '</span>', N: '<span class="sN">' + T.s4_f_slotN + '</span>' };
+    const sy = { A: '<span class="sA">f(x₀)</span>', B: '<span class="sB">f(x₀ + h)</span>', N: '<span class="sN">h</span>' };
+    $('#s4-fw').innerHTML = fill(T.s4_f_words, sl);
+    $('#s4-fs').innerHTML = fill(T.s4_f_sym, sy);
+    $('#s4-fsign').textContent = T.s4_f_sign;
+    const s = st.f;
+    showBlock($('#s4-fcard'), s);
+    showBlock($('#s4-b1'), s);
+    $('#s4-fs').style.animationDelay = '0.6s'; $('#s4-fsign').style.animationDelay = '1.2s';
+    $('#s4-fgo').hidden = s;
+  }
+  function renderAfter1(flash){
+    renderTable(!!flash);
+    const was = $('#s4-after1').hidden;
+    showBlock($('#s4-after1'), st.ran1);
+    if (flash && was){      // chữ hiện lần lượt: bảng → kết luận → công thức lim → tên "đạo hàm" → minh họa 2
+      // ⏱ ĐỘ TRỄ (giây) của từng khối, đúng thứ tự trong mảng trên. Muốn hiện nhanh hơn thì giảm các số này.
+      const DELAYS = [0, 0.4, 0.9, 1.2, 1.6, 2.2, 2.8];
+      ['#s4-r1', '#s4-conv', '#s4-deflead', '#s4-def', '#s4-defnote', '#s4-name', '#s4-b2'].forEach((id, i) => {
+        const e = $(id); e.classList.add('fade'); e.style.animationDelay = DELAYS[i] + 's';
+      });
+    }
+  }
+  function renderAfter2(){
+    showBlock($('#s4-after2'), st.ran2);
+  }
+
+  /* ---------- chạy ---------- */
+  function bring(sel, block){
+    const el = $(sel);
+    try { el.scrollIntoView({ block: block || 'start', behavior: reduced() ? 'auto' : 'smooth' }); } catch (e) {}
+  }
+  const clk = k => k === 1 ? clock1 : clock2;
+  const tot = k => k === 1 ? R1.total : R2.total;
+  function startRun(k, isReplay){
+    const c = clk(k);
+    c.stop(); c.setTotal(tot(k));
+    $('#s4-fig' + k).hidden = false;
+    $('#s4-go' + k).hidden = true; $('#s4-read' + k).hidden = true;
+    log(isReplay ? 's4_replay' : 's4_start', { run: k });
+    c.seek(0);
+    if (!reduced()) c.play();
+    syncButtons(k);
+    bring('#s4-fig' + k);
+  }
+  /* ✔ KẾT THÚC MOTION: k = 1 → hiện bảng + định nghĩa lim + tên đạo hàm (renderAfter1); k = 2 → hiện tiếp tuyến, hệ số góc (renderAfter2). */
+  function finishRun(k){
+    if (k === 1 && !st.ran1){ st.ran1 = true; renderAfter1(true); bring('#s4-r1', 'start'); }
+    else if (k === 2 && !st.ran2){ st.ran2 = true; renderAfter2(); bring('#s4-conc2', 'center'); }
+    syncButtons(k);
+  }
+  function syncButtons(k){
+    const c = clk(k);
+    if (!root || !c) return;
+    const done = c.t >= c.total, rm = reduced();
+    $('#s4-pp' + k).hidden = done || rm;
+    $('#s4-pp' + k).textContent = c.playing ? T.s3_b_pause : T.s3_b_resume;
+    $('#s4-skip' + k).hidden = done;
+    $('#s4-skip' + k).textContent = rm ? T.s3_b_step : T.s3_b_skip;
+    $('#s4-skip' + k).classList.toggle('pulsebtn', rm && !done);
+    $('#s4-rep' + k).hidden = !done;
+  }
+  function bindControls(k){
+    $('#s4-go' + k).addEventListener('click', () => startRun(k));
+    $('#s4-pp' + k).addEventListener('click', () => {
+      const c = clk(k);
+      if (c.playing){ c.pause(); log('s4_pause', { run: k }); } else c.play();
+      syncButtons(k);
+    });
+    $('#s4-skip' + k).addEventListener('click', () => {
+      const c = clk(k), bs = k === 1 ? R1.bounds : R2.bounds, nb = bs.find(v => v > c.t + 1), was = c.playing;
+      c.pause();
+      c.seek(nb === undefined ? tot(k) : nb);
+      if (c.t >= tot(k)) finishRun(k);
+      else if (was) c.play();
+      syncButtons(k);
+    });
+    $('#s4-rep' + k).addEventListener('click', () => startRun(k, true));
+  }
+  const ctlRow = k => '<div class="row stk" style="margin-top:0"><button type="button" class="btn sm" id="s4-pp' + k + '">' + T.s3_b_pause + '</button><button type="button" class="btn sm" id="s4-skip' + k + '">' + T.s3_b_skip + '</button><button type="button" class="btn sm" id="s4-rep' + k + '" hidden>' + T.s3_b_replay + '</button></div>';
+
+  function mount(r){
+    root = r;
+    const th = T.s4_r_th.split('|');
+    const limHTML = '<span class="limwrap"><span class="lim"><span>lim</span><small>h → 0</small></span>' + frac('f(x₀ + h) ' + MINUS + ' f(x₀)', 'h') + '</span>';
+    root.innerHTML =
+      '<div class="kick">' + kick(4) + '</div>' +
+      '<h1 class="title">' + T.s4_title + '</h1>' +
+      '<div class="intro" id="s4-recap"><p class="on">' + T.s4_r1 + '</p><p class="on">' + T.s4_r2 + '</p><p class="on">' + T.s4_r3 + '</p><p class="on" style="color:var(--text)">' + T.s4_set + '</p></div>' +
+      '<div class="row"><button type="button" class="btn primary pulsebtn" id="s4-fgo" style="flex:none">' + T.s4_f_btn + '</button></div>' +
+      '<div class="card" id="s4-fcard" hidden><h3>' + T.s4_f_title + '</h3><p class="fl" id="s4-fw"></p><p class="fl" id="s4-fs"></p><p class="note" id="s4-fsign" style="font-size:14px"></p></div>' +
+      '<div id="s4-b1" hidden><p class="t2">' + T.s4_t1 + '</p><p class="readhint" id="s4-read1">' + T.s4_read + '</p>' +
+        '<div class="row"><button type="button" class="btn primary pulsebtn" id="s4-go1" style="flex:none">' + T.s4_go + '</button></div></div>' +
+      '<div id="s4-fig1" hidden style="margin-top:6px">' + ctlRow(1) +
+        '<div class="frame"><svg id="s4-svg1" class="cv" role="img" aria-label="Hai điểm B, một bên trái một bên phải A, cùng tiến sát A; vùng quanh A được phóng lớn xuống khung dưới."></svg></div>' +
+        '<div class="legend"><span><i></i>' + T.s3_leg_mtn + '</span><span><i class="d" style="border-color:' + C_L + '"></i>' + T.s4_leg_l + '</span><span><i class="d"></i>' + T.s4_leg_r + '</span></div>' +
+      '</div>' +
+      '<div id="s4-after1" hidden>' +
+        '<div class="card" id="s4-r1" style="scroll-margin-top:124px"><h3>' + T.s4_r_title + '</h3>' +
+          '<table class="tb" id="s4-tb"><thead><tr><th>' + th[0] + '</th><th style="color:' + C_L + '">' + th[1] + '</th><th style="color:' + C_R + '">' + th[2] + '</th></tr></thead><tbody></tbody></table></div>' +
+        '<div class="conclusion" id="s4-conv">' + T.s4_conv + '</div>' +
+        '<p class="t2" id="s4-deflead" style="margin-bottom:0">' + T.s4_def_lead + '</p>' +
+        '<div class="defbox" id="s4-def">' + fill(T.s4_def, { lim: limHTML }) + '</div>' +
+        '<p class="note" id="s4-defnote" style="font-size:14px">' + T.s4_def_note + '</p>' +
+        '<div class="conclusion" id="s4-name">' + T.s4_name + '</div>' +
+        '<div id="s4-b2"><p class="t2">' + T.s4_t2 + '</p><p class="readhint" id="s4-read2">' + T.s4_read + '</p>' +
+          '<div class="row"><button type="button" class="btn primary pulsebtn" id="s4-go2" style="flex:none">' + T.s4_go + '</button></div></div>' +
+      '</div>' +
+      '<div id="s4-fig2" hidden style="margin-top:6px">' + ctlRow(2) +
+        '<div class="frame"><svg id="s4-svg2" class="cv" role="img" aria-label="Đường nối A–B quay dần khi B tiến sát A, cho đến khi gần như chỉ còn một điểm."></svg></div>' +
+      '</div>' +
+      '<div id="s4-after2" hidden>' +
+        '<div class="conclusion" id="s4-conc2" style="scroll-margin-top:124px">' + T.s4_t_concl + '</div>' +
+        '<div class="conclusion" id="s4-hsg">' + T.s4_t_hsg + '</div>' +
+        '<p class="bridge">' + T.s4_bridge + '</p>' +
+      '</div>';
+    svg1 = $('#s4-svg1'); svg2 = $('#s4-svg2');
+    clock1 = makeClock(paint1, () => finishRun(1));
+    clock2 = makeClock(paint2, () => finishRun(2));
+    $('#s4-fgo').addEventListener('click', () => { st.f = true; log('s4_formula'); renderFormula(); try { $('#s4-fcard').scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); } catch (e) {} });
+    bindControls(1); bindControls(2);
+    renderFormula();
+    if (st.ran1){
+      $('#s4-fig1').hidden = false; $('#s4-go1').hidden = true; $('#s4-read1').hidden = true;
+      clock1.setTotal(R1.total); clock1.seek(R1.total);
+      renderAfter1();
+    }
+    if (st.ran2){
+      $('#s4-fig2').hidden = false; $('#s4-go2').hidden = true; $('#s4-read2').hidden = true;
+      clock2.setTotal(R2.total); clock2.seek(R2.total);
+      renderAfter2();
+    }
+    syncButtons(1); syncButtons(2);
+  }
+  return {
+    tab: T.tab4, hasNext: true,
+    mount: mount,
+    unmount(){ if (clock1) clock1.stop(); if (clock2) clock2.stop(); svg1 = null; svg2 = null; },
+    redraw(){
+      if (svg1 && clock1 && !$('#s4-fig1').hidden) paint1(clock1.t);
+      if (svg2 && clock2 && !$('#s4-fig2').hidden) paint2(clock2.t);
+    },
+    dbg: { seek1: t => { clock1.pause(); clock1.seek(t); syncButtons(1); }, seek2: t => { clock2.pause(); clock2.seek(t); syncButtons(2); },
+           R1: R1, R2: R2, get clock1(){ return clock1; }, get clock2(){ return clock2; } }
+  };
+}
+/* ============================================================
+   MÀN 5 — Tự tay tính với y = x²
+   Chữ đứng yên → "Tính thử" (bảng h = 1; 0,1; 0,01) → "Rút gọn" (đại số, rút h, h → 0) → "Thay 3 bằng x₀ bất kỳ" (2x₀)
+   → chữ + nút "Xem minh họa": ba tiếp tuyến lần lượt hiện (không chữ nào chạy) → chạy xong mới hiện hệ số góc −4, 0, 4.
+   ============================================================ */
+function createS5(){
+  const st = state.s5;                                   // { stage, ranB }
+  /* ⏱ THỜI GIAN MÀN 5: mỗi tiếp tuyến có thời điểm bắt đầu vẽ (s) và vẽ xong (e), tính bằng ms.
+     TOTAL = lúc kết thúc; TOTAL − e của tiếp tuyến cuối = thời gian hình đứng yên trước khi hiện nhãn −4, 0, 4 và câu kết luận
+     (để ngắn, 700, để học sinh không tưởng bị đơ). */
+  const TANG = [{ x0: -2, s: 600, e: 2200 }, { x0: 0, s: 2800, e: 4400 }, { x0: 2, s: 5000, e: 6600 }];
+  const TOTAL = 7300;
+  const BOUNDS = TANG.map(q => q.e).concat([TOTAL]);
+  let root, svg, clock = null;
+  const $ = s => root.querySelector(s);
+  const HS = [1, 0.1, 0.01];
+
+  /* 🎨 VẼ: parabol + ba tiếp tuyến (tỉ lệ 1:1) là hàm của thời gian t. Nhãn hệ số góc chỉ vẽ khi t ≥ TOTAL. */
+  function paint(t){
+    if (!svg) return;
+    const W = svg.clientWidth || 600;
+    const unit = Math.min((W - 28) / 6.4, 52), ymin = -1.2, ymax = 7.5, top = 10;
+    const H = top + (ymax - ymin) * unit + 24;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.style.height = H + 'px';
+    svg.replaceChildren();
+    const cx = W / 2, X = x => cx + x * unit, Y = y => top + (ymax - y) * unit;
+    const defs = node(svg, 'defs'), cp = node(defs, 'clipPath', { id: 's5-clip' });
+    node(cp, 'rect', { x: X(-3.2), y: Y(ymax), width: 6.4 * unit, height: (ymax - ymin) * unit });
+    for (let y = 0; y <= 7; y++) line(svg, X(-3.2), Y(y), X(3.2), Y(y), 'var(--line)', y === 0 ? 1.5 : 1);
+    for (let x = -3; x <= 3; x++){
+      line(svg, X(x), Y(ymax), X(x), Y(ymin), 'var(--line)', x === 0 ? 1.5 : 1, { opacity: x === 0 ? 1 : .5 });
+      node(svg, 'text', { x: X(x), y: Y(0) + 16, 'text-anchor': 'middle', class: 'ax' }, x < 0 ? MINUS + Math.abs(x) : String(x));
+    }
+    [2, 4, 6].forEach(y => node(svg, 'text', { x: X(-3.2) + 4, y: Y(y) - 4, class: 'ax' }, String(y)));
+    const g = node(svg, 'g', { 'clip-path': 'url(#s5-clip)' });
+    const pts = [];
+    for (let i = 0; i <= 160; i++){ const x = -3.2 + 6.4 * i / 160; pts.push([X(x), Y(x * x)]); }
+    path(g, pts, 'var(--teal)', 3);
+    TANG.forEach(q => {
+      const u = ease(prog(t, q.s, q.e)); if (u <= 0) return;
+      const m = 2 * q.x0, col = m < 0 ? 'var(--down)' : (m > 0 ? 'var(--up)' : 'var(--flat)'), hl = 1.3 * u, y0 = q.x0 * q.x0;
+      line(g, X(q.x0 - hl), Y(y0 - m * hl), X(q.x0 + hl), Y(y0 + m * hl), col, 3.2, { 'stroke-linecap': 'round', class: 's5-tan', 'data-x0': q.x0 });
+      node(svg, 'circle', { cx: X(q.x0), cy: Y(y0), r: 5, fill: 'var(--bg)', stroke: col, 'stroke-width': 2.6 });
+    });
+    if (t >= TOTAL){       // nhãn hệ số góc chỉ hiện khi hình đã dừng hẳn
+      TANG.forEach(q => {
+        const m = 2 * q.x0, y0 = q.x0 * q.x0, col = m < 0 ? 'var(--down)' : (m > 0 ? 'var(--up)' : 'var(--flat)');
+        const lx = q.x0 < 0 ? X(q.x0) - 12 : (q.x0 > 0 ? X(q.x0) + 12 : X(0)), ly = q.x0 === 0 ? Y(0) - 12 : Y(y0) - 4, an = q.x0 < 0 ? 'end' : (q.x0 > 0 ? 'start' : 'middle');
+        node(svg, 'text', { x: lx, y: ly, 'text-anchor': an, style: 'font-weight:700;font-size:15px;fill:' + col, class: 's5-lab' }, fill(T.s5_p_lab, { m: fmt(m, 0) }));
+      });
+    }
+    syncButtons();
+  }
+
+  function bring(sel, block){
+    const el = $(sel);
+    try { el.scrollIntoView({ block: block || 'start', behavior: reduced() ? 'auto' : 'smooth' }); } catch (e) {}
+  }
+  function syncButtons(){
+    if (!root || !clock) return;
+    const done = clock.t >= clock.total, rm = reduced();
+    $('#s5-pp').hidden = done || rm;
+    $('#s5-pp').textContent = clock.playing ? T.s3_b_pause : T.s3_b_resume;
+    $('#s5-skip').hidden = done;
+    $('#s5-skip').textContent = rm ? T.s3_b_step : T.s3_b_skip;
+    $('#s5-skip').classList.toggle('pulsebtn', rm && !done);
+    $('#s5-rep').hidden = !done;
+  }
+  function startRun(isReplay){
+    clock.stop(); clock.setTotal(TOTAL);
+    $('#s5-fig').hidden = false; $('#s5-go').hidden = true; $('#s5-read').hidden = true;
+    log(isReplay ? 's5_replay' : 's5_start');
+    clock.seek(0);
+    if (!reduced()) clock.play();
+    syncButtons();
+    bring('#s5-fig');
+  }
+  /* ✔ KẾT THÚC MOTION: hiện câu kết luận hệ số góc −4, 0, 4 và câu nối sang màn 6 */
+  function finishRun(){
+    if (!st.ranB){ st.ranB = true; render(true); bring('#s5-concl', 'center'); }
+    syncButtons();
+  }
+
+  /* ---------- 📋 các khối hiện dần theo từng nút (stage 1: bảng · 2: rút gọn · 3: x₀ bất kỳ). animationDelay = (i × 0.35) giây giữa các dòng ---------- */
+  function tableHTML(){
+    return HS.map(h => {
+      const up = Math.pow(3 + h, 2) - 9;
+      return '<tr><td>' + fmt(h, 2) + '</td><td>' + fmt(up, 4) + '</td><td class="v">' + fmt(up / h, 4) + '</td></tr>';
+    }).join('');
+  }
+  function render(flash){
+    const s = st.stage;
+    $('#s5-tb tbody').innerHTML = tableHTML();
+    showBlock($('#s5-c1'), s >= 1);
+    $('#s5-b1').hidden = s >= 1;
+    showBlock($('#s5-c2'), s >= 2);
+    $('#s5-b2').hidden = s >= 2;
+    ['#s5-a0', '#s5-a1', '#s5-a2', '#s5-a3', '#s5-a4', '#s5-a5', '#s5-key'].forEach((id, i) => { const e = $(id); const was = e.hidden; e.hidden = s < 2; if (was && !e.hidden){ e.classList.add('fade'); e.style.animationDelay = (i * 0.35) + 's'; } });
+    showBlock($('#s5-c3'), s >= 3);
+    $('#s5-b3').hidden = s >= 3;
+    ['#s5-g1', '#s5-g2', '#s5-gnote'].forEach((id, i) => { const e = $(id); const was = e.hidden; e.hidden = s < 3; if (was && !e.hidden){ e.classList.add('fade'); e.style.animationDelay = (i * 0.35) + 's'; } });
+    showBlock($('#s5-pb'), s >= 3);
+    showBlock($('#s5-after'), st.ranB);
+  }
+  function next(sel){
+    st.stage++; log('s5_stage', { n: st.stage });
+    render(true);
+    try { $(sel).scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); } catch (e) {}
+  }
+
+  function mount(r){
+    root = r;
+    const th = T.s5_th.split('|');
+    // phân số lim (h → 0) của công thức, giống màn 4 (dùng chung CSS .limwrap / .lim)
+    const limHTML = '<span class="limwrap"><span class="lim"><span>lim</span><small>h → 0</small></span>' + frac('f(x₀ + h) ' + MINUS + ' f(x₀)', 'h') + '</span>';
+    root.innerHTML =
+      '<div class="kick">' + kick(5) + '</div>' +
+      '<h1 class="title">' + T.s5_title + '</h1>' +
+      // KHỐI CÔNG THỨC BAN ĐẦU: hiện ngay khi vào màn, trước mọi nút / phép tính (chữ: T.s5_f_lead, T.s5_f_def)
+      '<p class="t2" style="margin-bottom:0">' + T.s5_f_lead + '</p>' +
+      '<div class="defbox">' + fill(T.s5_f_def, { lim: limHTML }) + '</div>' +
+      '<p class="lead" style="font-size:17px;margin-top:14px">' + T.s5_t1 + '</p>' +
+      '<div class="row"><button type="button" class="btn primary pulsebtn" id="s5-b1" style="flex:none">' + T.s5_b1 + '</button></div>' +
+      '<div id="s5-c1" hidden>' +
+        '<div class="card"><table class="tb" id="s5-tb"><thead><tr><th>' + th[0] + '</th><th>' + th[1] + '</th><th>' + th[2] + '</th></tr></thead><tbody></tbody></table></div>' +
+        '<p class="t2">' + T.s5_obs + '</p>' +
+        '<div class="row"><button type="button" class="btn primary pulsebtn" id="s5-b2" style="flex:none">' + T.s5_b2 + '</button></div>' +
+      '</div>' +
+      '<div class="card" id="s5-c2" hidden><h3>' + T.s5_a_title + '</h3>' +
+        '<p class="fl" id="s5-a0" hidden>' + T.s5_a0 + '</p><p class="fl" id="s5-a1" hidden>' + T.s5_a1 + '</p><p class="fl" id="s5-a2" hidden>' + T.s5_a2 + '</p>' +
+        '<p class="fl" id="s5-a3" hidden>' + T.s5_a3.replace('h(6 + h) ÷ h', '<span class="cx">h</span>(6 + h) ÷ <span class="cx">h</span>') + '</p>' +
+        '<p class="fl" id="s5-a4" hidden><b>' + T.s5_a4 + '</b></p><p class="fl" id="s5-a5" hidden>' + T.s5_a5 + '</p>' +
+        '<div class="conclusion" id="s5-key" hidden>' + T.s5_key + '</div>' +
+        '<div class="row"><button type="button" class="btn sm accent pulsebtn" id="s5-b3">' + T.s5_b3 + '</button></div>' +
+      '</div>' +
+      '<div class="card" id="s5-c3" hidden><h3>' + T.s5_g_title + '</h3>' +
+        '<p class="fl" id="s5-g1" hidden>' + T.s5_g1 + '</p><p class="fl" id="s5-g2" hidden>' + T.s5_g2 + '</p>' +
+        '<p class="note" id="s5-gnote" hidden style="margin:0">' + T.s5_gnote + '</p>' +
+      '</div>' +
+      '<div id="s5-pb" hidden><p class="t2">' + T.s5_t2 + '</p><p class="readhint" id="s5-read">' + T.s4_read + '</p>' +
+        '<div class="row"><button type="button" class="btn primary pulsebtn" id="s5-go" style="flex:none">' + T.s4_go + '</button></div></div>' +
+      '<div id="s5-fig" hidden style="margin-top:6px">' +
+        '<div class="row stk" style="margin-top:0"><button type="button" class="btn sm" id="s5-pp">' + T.s3_b_pause + '</button><button type="button" class="btn sm" id="s5-skip">' + T.s3_b_skip + '</button><button type="button" class="btn sm" id="s5-rep" hidden>' + T.s3_b_replay + '</button></div>' +
+        '<div class="frame"><svg id="s5-svg" class="cv" role="img" aria-label="Đồ thị y = x². Ba tiếp tuyến lần lượt hiện tại x₀ = −2, 0 và 2."></svg></div>' +
+      '</div>' +
+      '<div id="s5-after" hidden>' +
+        '<div class="conclusion" id="s5-concl" style="scroll-margin-top:124px">' + T.s5_p_concl + '</div>' +
+        '<p class="bridge">' + T.s5_bridge + '</p>' +
+      '</div>';
+    svg = $('#s5-svg');
+    clock = makeClock(paint, finishRun);
+    $('#s5-b1').addEventListener('click', () => next('#s5-c1'));
+    $('#s5-b2').addEventListener('click', () => next('#s5-c2'));
+    $('#s5-b3').addEventListener('click', () => next('#s5-c3'));
+    $('#s5-go').addEventListener('click', () => startRun(false));
+    $('#s5-pp').addEventListener('click', () => { if (clock.playing){ clock.pause(); log('s5_pause'); } else clock.play(); syncButtons(); });
+    $('#s5-skip').addEventListener('click', () => {
+      const nb = BOUNDS.find(v => v > clock.t + 1), was = clock.playing;
+      clock.pause(); clock.seek(nb === undefined ? TOTAL : nb);
+      if (clock.t >= TOTAL) finishRun(); else if (was) clock.play();
+      syncButtons();
+    });
+    $('#s5-rep').addEventListener('click', () => startRun(true));
+    render(false);
+    if (st.ranB){
+      $('#s5-fig').hidden = false; $('#s5-go').hidden = true; $('#s5-read').hidden = true;
+      clock.setTotal(TOTAL); clock.seek(TOTAL);
+    }
+    syncButtons();
+  }
+  return {
+    tab: T.tab5, hasNext: true,
+    mount: mount,
+    unmount(){ if (clock) clock.stop(); svg = null; },
+    redraw(){ if (svg && clock && !$('#s5-fig').hidden) paint(clock.t); },
+    dbg: { seek: t => { clock.pause(); clock.seek(t); syncButtons(); }, TOTAL: TOTAL, TANG: TANG, get clock(){ return clock; } }
+  };
+}
+/* ============================================================
+   MÀN 6 — Chốt kiến thức: bốn câu trắc nghiệm tự chấm (đáp án nhiễu là các hiểu lầm điển hình), rồi bảng "Điều cần nhớ".
+   Chọn sai thì chọn lại; câu đúng thì khóa. Bảng tóm tắt hiện khi cả bốn câu đã đúng.
+   ============================================================ */
+function createS6(){
+  const st = state.s6;                                   // { ok[4], tries[4], pick[4] }
+  let root;
+  const $ = s => root.querySelector(s);
+  const ANS = () => T.s6_ans.split('|').map(Number);
+  const Q = i => ({ q: T['s6_q' + i], o: T['s6_q' + i + 'o'].split('|'), f: T['s6_q' + i + 'f'].split('|') });
+
+  function renderQ(i){
+    const el = $('#s6-q' + (i + 1)), d = Q(i + 1), a = ANS()[i];
+    el.querySelectorAll('.opt').forEach((b, k) => {
+      b.disabled = st.ok[i];
+      if (st.ok[i] && k === a) b.dataset.s = 'ok';
+      else if (!st.ok[i] && b.dataset.bad === '1') b.dataset.s = 'bad';
+      else if (b.dataset.s !== 'ok') delete b.dataset.s;
+    });
+    const f = el.querySelector('.qf');
+    if (st.pick[i] >= 0){
+      f.textContent = d.f[st.pick[i]];
+      f.className = 'qf ' + (st.pick[i] === a ? 'ok' : 'bad');
+    }
+  }
+  function renderSum(){
+    showBlock($('#s6-sum'), st.ok.every(Boolean));
+  }
+  function choose(i, k){
+    const a = ANS()[i];
+    if (st.ok[i]) return;
+    st.tries[i]++; st.pick[i] = k;
+    const ok = k === a;
+    log('s6_answer', { q: i + 1, ok: ok });
+    const b = $('#s6-q' + (i + 1)).querySelectorAll('.opt')[k];
+    if (ok) st.ok[i] = true; else b.dataset.bad = '1';
+    renderQ(i); renderSum();
+    if (st.ok.every(Boolean)){ try { $('#s6-sum').scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); } catch (e) {} }
+  }
+  function mount(r){
+    root = r;
+    let html = '<div class="kick">' + kick(6) + '</div><h1 class="title">' + T.s6_title + '</h1><p class="lead" style="font-size:17px">' + T.s6_lead + '</p>';
+    for (let i = 1; i <= 4; i++){
+      const d = Q(i);
+      html += '<div class="q" id="s6-q' + i + '"><p class="qt">' + i + '. ' + d.q + '</p>' +
+        d.o.map((o, k) => '<button type="button" class="opt" data-k="' + k + '">' + o + '</button>').join('') +
+        '<p class="qf" aria-live="polite"></p></div>';
+    }
+    html += '<div id="s6-sum" hidden><div class="conclusion"><b style="color:var(--teal)">' + T.s6_sum_title + '</b>' +
+      '<p style="margin:8px 0 6px">' + T.s6_sum1 + '</p><p style="margin:0 0 6px">' + T.s6_sum2 + '</p><p style="margin:0">' + T.s6_sum3 + '</p></div></div>';
+    root.innerHTML = html;
+    for (let i = 0; i < 4; i++){
+      const btns = $('#s6-q' + (i + 1)).querySelectorAll('.opt');
+      btns.forEach((b, k) => b.addEventListener('click', () => choose(i, k)));
+      // khôi phục khi quay lại màn
+      if (st.pick[i] >= 0){
+        if (st.ok[i]) btns[ANS()[i]].dataset.s = 'ok';
+        else btns[st.pick[i]].dataset.bad = '1';
+        renderQ(i);
+      }
+    }
+    renderSum();
+  }
+  return {
+    tab: T.tab6, hasNext: false,
+    mount: mount,
+    unmount(){},
+    redraw(){}
+  };
+}
+
+/* ============================================================
+   Khung điều hướng: mảng screens[] — thêm màn 4, 5 chỉ cần thêm phần tử
+   ============================================================ */
+const screens = [createS1(), createS2(), createS3(), createS4(), createS5(), createS6()];
+const main = document.getElementById('app');
+const nav = document.getElementById('nav');
+const btnBack = document.getElementById('back'), btnNext = document.getElementById('next');
+
+screens.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'tab'; b.setAttribute('aria-label', s.tab);
+  const parts = s.tab.split(' · ');
+  b.innerHTML = '<span class="tn">' + parts[0] + '</span><span class="tl"> · ' + (parts[1] || '') + '</span>';
+  b.addEventListener('click', () => go(i));
+  nav.appendChild(b);
+});
+function go(i){
+  if (i < 0 || i >= screens.length) return;
+  if (state.screen >= 0) screens[state.screen].unmount();
+  state.screen = i;
+  main.replaceChildren();
+  screens[i].mount(main);
+  Array.from(nav.children).forEach((b, k) => { if (k === i) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
+  btnBack.disabled = i === 0;
+  btnNext.hidden = !screens[i].hasNext || i === screens.length - 1;
+  window.scrollTo(0, 0);
+  log('screen_enter', { screen: i + 1 });
+}
+btnBack.addEventListener('click', () => go(state.screen - 1));
+btnNext.addEventListener('click', () => go(state.screen + 1));
+let lastW = 0;
+new ResizeObserver(entries => {
+  const w = Math.round(entries[0].contentRect.width);
+  if (w === lastW) return;
+  lastW = w;
+  if (state.screen >= 0) screens[state.screen].redraw();
+}).observe(main);
+
+window.__app = { state: state, screens: screens, go: go };
+go(0);
+})();
+</script>
+</body>
+</html>
